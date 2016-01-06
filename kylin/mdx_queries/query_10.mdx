@@ -1,0 +1,4 @@
+SELECT {[Measures].[LO_REVENUE]} ON COLUMNS,
+Crossjoin({[LO_CUSTKEY].[LO_CUSTKEYCITYLEVEL].[<http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>], [LO_CUSTKEY].[LO_CUSTKEYCITYLEVEL].[<http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>]}, Crossjoin({[LO_SUPPKEY].[LO_SUPPKEYCITYLEVEL].[<http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>], [LO_SUPPKEY].[LO_SUPPKEYCITYLEVEL].[<http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>]},
+{[LO_ORDERDATE].[LO_ORDERDATEYEARMONTHLEVEL].[<http://lod2.eu/schemas/rdfh#lo_orderdateYearMonthDec1997>]})) ON ROWS
+FROM [kylinProjectName]

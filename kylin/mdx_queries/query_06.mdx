@@ -1,0 +1,4 @@
+SELECT {[Measures].[LO_REVENUE]} ON COLUMNS,
+{Crossjoin([LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].members, {[LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239>]})} ON ROWS
+FROM [kylinProjectName]
+WHERE [LO_SUPPKEY].[LO_SUPPKEYREGIONLEVEL].[<http://lod2.eu/schemas/rdfh#lo_suppkeyRegionEUROPE>]

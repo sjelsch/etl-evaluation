@@ -1,0 +1,22 @@
+SELECT
+  SUM(LO_REVENUE) AS LO_REVENUE, LO_ORDERDATEYEARLEVEL, LO_PARTKEYBRAND1LEVEL
+FROM FACTS
+INNER JOIN LO_ORDERDATE ON (FACTS.LO_ORDERDATE = LO_ORDERDATE.KEY)
+INNER JOIN LO_PARTKEY ON (FACTS.LO_PARTKEY = LO_PARTKEY.KEY)
+INNER JOIN LO_SUPPKEY ON (FACTS.LO_SUPPKEY = LO_SUPPKEY.KEY)
+WHERE
+  (
+    LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2221>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2222>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2223>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2224>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2225>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2226>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2227>'
+    OR  LO_PARTKEYBRAND1LEVEL = '<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2228>'
+  )
+  AND LO_SUPPKEYREGIONLEVEL = '<http://lod2.eu/schemas/rdfh#lo_suppkeyRegionASIA>'
+GROUP BY
+  LO_ORDERDATEYEARLEVEL, LO_PARTKEYBRAND1LEVEL
+ORDER BY
+  LO_ORDERDATEYEARLEVEL, LO_PARTKEYBRAND1LEVEL

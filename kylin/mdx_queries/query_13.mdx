@@ -1,0 +1,5 @@
+WITH MEMBER [Measures].[Profit] as '[Measures].[LO_REVENUE] - [Measures].[LO_SUPPLYCOST]'
+SELECT {[Measures].[Profit]} ON COLUMNS,
+CrossJoin({[LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].[<http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>], [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].[<http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>]}, Crossjoin([LO_SUPPKEY].[LO_SUPPKEYNATIONLEVEL].[<http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES>].children, [LO_PARTKEY].[LO_PARTKEYCATEGORYLEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14>].children)) ON ROWS
+FROM [kylinProjectName]
+WHERE [LO_CUSTKEY].[LO_CUSTKEYREGIONLEVEL].[<http://lod2.eu/schemas/rdfh#lo_custkeyRegionAMERICA>]

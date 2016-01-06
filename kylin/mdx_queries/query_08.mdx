@@ -1,0 +1,12 @@
+SELECT {[Measures].[LO_REVENUE]} ON COLUMNS,
+Crossjoin([LO_CUSTKEY].[LO_CUSTKEYNATIONLEVEL].[<http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES>].children, Crossjoin([LO_SUPPKEY].[LO_SUPPKEYNATIONLEVEL].[<http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES>].children,
+FILTER(
+  [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].members,
+    [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].currentmember.name = "<http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>"
+      OR [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].currentmember.name = "<http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>"
+      OR [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].currentmember.name = "<http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>"
+      OR [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].currentmember.name = "<http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>"
+      OR [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].currentmember.name = "<http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>"
+      OR [LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].currentmember.name = "<http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>"
+))) ON ROWS
+FROM [kylinProjectName]

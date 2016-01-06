@@ -1,0 +1,7 @@
+SELECT {[Measures].[SUM_REVENUE]} ON COLUMNS,
+{([LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].[<http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>], [LO_ORDERDATE].[LO_ORDERDATEWEEKNUMINYEARLEVEL].[<http://lod2.eu/schemas/rdfh#lo_orderdateWeeknuminyear19946>])} ON ROWS
+FROM [kylinProjectName]
+WHERE CrossJoin(
+  Filter([LO_DISCOUNT].[LO_DISCOUNT].members, Cast([LO_DISCOUNT].currentmember.name as NUMERIC) >= 5 and Cast([LO_DISCOUNT].currentmember.name as NUMERIC) <= 7),
+  Filter([LO_QUANTITY].[LO_QUANTITY].members, Cast([LO_QUANTITY].currentmember.name as NUMERIC) >= 26 and Cast([LO_QUANTITY].currentmember.name as NUMERIC) <= 35)
+)

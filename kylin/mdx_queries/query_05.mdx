@@ -1,0 +1,14 @@
+SELECT {[Measures].[LO_REVENUE]} ON COLUMNS,
+{Crossjoin([LO_ORDERDATE].[LO_ORDERDATEYEARLEVEL].members, {
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2221>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2222>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2223>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2224>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2225>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2226>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2227>],
+  [LO_PARTKEY].[LO_PARTKEYBRAND1LEVEL].[<http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2228>]}
+)} ON ROWS
+FROM [kylinProjectName]
+WHERE
+  [LO_SUPPKEY].[LO_SUPPKEYREGIONLEVEL].[<http://lod2.eu/schemas/rdfh#lo_suppkeyRegionASIA>]
