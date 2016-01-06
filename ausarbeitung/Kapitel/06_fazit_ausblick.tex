@@ -1,0 +1,38 @@
+\chapter{Fazit und Ausblick}
+\label{cha:fazit}
+
+Im folgenden Kapitel werden die Ergebnisse dieser Arbeit zusammengefasst. Des Weiteren wird ein Ausblick auf weitere Entwicklungen gegeben und Herausforderungen an zukünftige Arbeiten dargestellt.
+
+\section{Zusammenfassung}
+Im Rahmen dieser Arbeit wurde ein umfangreicher ETL-Prozess implementiert, der automatisiert Statistical Linked Data im RDF Data Cube Vocabulary in eine horizontal skalierende OLAP Engine transformiert und für Analysen bereitstellt. Dabei wurden Open-Source-Technologien aus dem Big-Data-Umfeld eingesetzt. Neben der Ausführungsdauer des ETL-Prozesses wurden auch die Antwortzeiten analytischer MDX- und SQL-Abfragen evaluiert.
+
+Die Evaluation ergab, dass die analytischen Abfragen bereits bei einer relativ kleinen Datenmenge in einer deutlich kürzen Zeit beantwortet werden als äquivalente Abfragen in MySQL und Open Virtuoso. In diesen Fällen ist der Vorteil durch die horizontale Speicherung der statistischen Daten in Kylin bemerkbar. Des Weiteren wurde im Rahmen der Evaluation festgestellt, dass der Einsatz von Mondrian zwar die Möglichkeit bietet, MDX-Abfragen in einer horizontal skalierbaren Umgebung auszuführen, jedoch die Ausführung aufgrund der zeitlichen Latenz während der Generierung der SQL-Abfragen nicht so effizient ist, wie äquivalente SQL-Abfragen.
+
+Ferner wurde ermittelt, dass der hier vorgestellte ETL-Prozess erst ab einer größeren Datenmenge einen Vorteil gegenüber Import-Vorgängen bei nicht-horizontal skalierenden Systemen bietet. Der Einsatz von Apache Kylin ist mit dem Bereistellen der Fakten- und den Dimensionstabellen in Hive im Sternschema verbunden. Ein weiterer Grund ist der Overhead, der bei der Generierung der MapReduce-Jobs entsteht. Bei einer kleinen Datenmenge hat die horizontale Skalierung keinen messbaren Effekt auf die Ausführung der MapReduce-Jobs.
+
+Die im Abschnitt \ref{Zielsetzung} vorgestellten Zielsetzungen haben nach der Evaluation Folgendes ergeben:
+\begin{compactenum}[(V1)]
+\item Die Dauer des ETL-Prozesses bei gro{\ss}en Datensätzen mit vielen Zusatzinformationen ist zufriedenstellend, da innerhalb der RDF-Daten die nötigen Informationen für das multidimensionale Datenmodell (Metadaten und Daten) effizient ausgelesen werden können.
+\item Bei einer Aktualisierung des Datenbestands muss der ETL-Prozess auch in diesem System neu durchgeführt werden.
+\item Bei der Hinzunahme neuer Daten muss der ETL-Prozess und die Generierung des OLAP Cubes lediglich für die neuen Daten durchgeführt werden. Kylin bietet durch den Einsatz einer Datum-Spalte die Möglichkeit, einen OLAP Cube mit neuen Daten aus einem definierbaren Zeitintervall zu generieren und mit einem bestehenden OLAP Cube zusammenzuführen.
+\item Zusatzinformationen in den Datensätzen werden bei der Erstellung des multidimensionalen Datenmodells in diesem System zum Teil gefiltert. Zwar werden alle Attribute von konkreten Dimensionsinstanzen bei der Generierung des OLAP Cubes berücksichtigt, doch aufgrund des Sternschemas werden weiterführende Informationen nicht mit einbezogen.
+\end{compactenum}
+
+Im nächsten Abschnitt wird ein Ausblick und weitere Ideen für zukünftige Arbeiten beschrieben.
+
+\section{Ausblick und weitere Ideen}
+Im Allgemeinen liegen die RDF-Daten nicht im benötigten N-Triples-Format vor. Jedoch konnte die Transformation der RDF-Daten im Rahmen der Abschlussarbeit nicht parallelisiert werden. Diese Herausforderung gilt es in einer zukünftigen Arbeit zu untersuchen.
+
+Des Weiteren werden Verknüpfungen zu neuen Informationen aus verschiedenen Datenquellen in der vorgestellten Lösung nicht berücksichtigt. Weiterführende Analysen sollten die Möglichkeit untersuchen, die verlinkten Daten in einem Sternschema zusammenzuführen. Dies hätte einen enorm großen OLAP Cube zur Folge. Durch die horizontale Skalierung kann Apache Kylin jedoch analytische Abfragen auf Grundlage einer beliebig großen Datenmenge interaktiv ausführen.
+
+Eine weiterführende Ausarbeitung kann einen Vergleich zu horizontal skalierenden RDF Stores ziehen. Hierfür stellt Virtuoso ab der Enterprise Version 6 eine kommerzielle Clusterlösung bereit. Alternativ kann \textit{4store}\footnote{ s. 4store-Webseite unter \url{http://4store.org/}.}, ein horizontal skalierender RDF Store aus dem Open-Source-Bereich, zur Evaluation verwendet werden.
+
+Die Optimierung der Ausführungsdauer sollte außerdem Gegenstand einer weiteren Arbeit sein. Hinsichtlich der MDM-Loader- und der MDM-2-Starschema-Komponente können neue Open-Source-Projekte, z.\,B. Apache Spark\footnote{ s. Apache Spark Webseite unter \url{http://spark.apache.org/}.} oder Clouderas \textit{Impala}\footnote{ s. Cloudera Impala Webseite unter \url{http://impala.io/}.}, eine kürzere Ausführungsdauer des ETL-Prozesses erzielen. Zudem plant die Open Souce Community von Kylin den Einsatz von Apache Spark beim Cube-Build-Prozess\footnote{ s. Spark-Test unter \url{http://kylin.apache.org/blog/2015/09/09/fast-cubing-on-spark/}.}. Erste Ergebnisse haben gezeigt, dass die Generierung des OLAP Cubes mit Apache Spark den Cube-Build-Prozess erheblich verkürzen kann.
+
+Die Antwortzeiten der analytischen MDX-Abfragen sind im Vergleich zu äquivalenten SQL-Abfragen deutlich höher. Wie bereits in der Evaluation festgestellt wurde, konnten ab einer gewissen Datenmenge einige wenige MDX-Abfragen nicht effizient durch Kylin beantwortet werden. Ausschlaggebend hierfür ist die MDX-zu-SQL-Transformation, denn Mondrian generiert SQL-Abfragen mit einer \textit{IN}-Anweisung in der \textit{WHERE}-Bedingung. Eigene Recherchen haben ergeben, dass Kylin zum Zeitpunkt der Evaluation solche SQL-Abfragen nicht effizient ausführen kann. Zukünftig sollte die Optimierung der MDX-zu-SQL-Transformation Gegenstand weiterer Untersuchungen sein. Hierzu würde eine neue Methode im \textit{KylinDialect} genügen, die bei der Generierung der SQL-Abfrage anstelle einer \textit{IN}-Anweisung eine \textit{OR}-verknüpfte Bedingung erstellt.
+
+Apache Kylin wird in der Version 2.0 die Möglichkeit bereitstellen, einen sogenannten \textit{Hybrid OLAP Cube} zu definieren. Dabei können projektübergreifend analytische Abfragen auf Grundlage verschiedener OLAP Cubes definiert werden. Dies führt zur folgenden Überlegung: Für jeden statistischen Datensatz im QB-Vokabular, der nach dem Linked-Data-Prinzip veröffentlichte Daten enthält, kann jeweils ein OLAP Cube in Kylin erstellt werden. Der ETL-Prozess kann in diesem Fall pro Datensatz einzeln ausgeführt werden. Änderungen oder neue Verlinkungen im Datensatz führen dazu, dass der ETL-Prozess lediglich für diesen einzelnen Datensatz durchgeführt werden muss.
+
+Der vorgestellte ETL-Prozess zeigt das Potential von Big-Data-Technologien. Durch die horizontal skalierende Architektur ist es möglich, eine enorm große RDF-Datenmenge in kurzer Zeit generisch in Kylin zu integrieren und interaktiv mit SQL- oder MDX-Abfragen zu analysieren. Einerseits stellt dieses System das Fundament bereit, MDX-Abfragen auf Grundlage von Apache Hadoop und Apache Kylin auszuführen. Andererseits können mit dem ETL-Prozess eine Vielzahl von unterschiedlichen Statistical Linked Data untersucht werden.
+
+

@@ -1,0 +1,179 @@
+\chapter{Konzeption}
+\label{cha:Konzeption}
+In den letzten Jahren ist das Interesse gestiegen, statistische Daten nach dem Linked-Data-Prinzip zu veröffentlichen\footnote{ s. Linked Data Webseite unter \url{http://linkeddata.org/}.}. Dieses Konzept bietet die Möglichkeit, Daten mit zusätzlichen Informationen aus unterschiedlichen Quellen im Web zu verknüpfen.
+
+Für die Analayse statistscher Datensätze werden häufig Konzepte aus der Business Intelligence eingesetzt. Dabei werden die zu analysierenden Daten aus unterschiedlichen, heterogenen operativen Systemen mithilfe eines ETL-Prozesses bereinigt, Konflikte aufgelöst und in ein Data Warehouse gespeichert. Zur Unterstützung der betrieblichen Entscheidungsfindung unterstützt das Konzept OLAP die Analyse der konsolidierten Daten mit verschiedenen Operationen, die eine interaktive Navigation durch den Datenraum ermöglichen.
+
+Die Analyse von Statistical Linked Data mit OLAP scheint ein vielversprechender Ansatz zur Unterstützung der Entscheidungsfindung zu sein. In einer früheren Publikation \glqq Transforming Statistical Linked Data for Use in OLAP Systems\grqq{} \cite{kampgen2011transforming} von Kämpgen und Harth wurde ein ETL-Prozess vorgestellt, der Statistical Linked Data im QB-Vokabular aus einer RDF-Datenbank in ein multidimensionales Datenmodell transformiert. Aufgrund der Metainformationen im QB-Vokabular war es möglich, die RDF-Daten automatisiert in eine relationale Datenbank im Sternschema zu speichern und für OLAP-Abfragen  bereitzustellen.
+
+Bei diesem Ansatz stellt sich jedoch die Frage, wie eine enorm große Menge an Statistical Linked Data effizient analysiert werden kann? Sowohl die relationale als auch die RDF-Datenbank skalieren in diesem ETL-Prozess nicht horizontal und besitzen daher eine natürliche Grenze bzgl. ihrer Datenspeicher- und Datenverarbeitungskapazität. Dies resultiert in einer sehr langen Ausführungsdauer des ETL-Prozesses zur Befüllung der relationalen Datenbank im Sternschema. Zusätzlich ist die Ausführung interaktiver Analysen von großen Datenmengen bei relationalen Datenbanken nicht effizient genug, da bereits ein einfaches Scannen der Daten zu einer hohen zeitlichen Latenz führt.
+
+Für Analysen großer Datenmengen sind daher Technologien aus dem Big-Data-Umfeld notwendig, die die Beschränkungen klassischer Systeme mittels Parallelisierung über viele Rechner hinweg überwinden. Mit Apache Hadoop sind derartige Technologien in einem Open Source Software Stack verfügbar.
+
+In diesem Kapitel werden die verwendeten Technologien und deren Zusammenspiel, sowie die Idee, das Konzept und die geplante Architektur genauer betrachtet. Ziel ist es, einen Lösungsansatz zu präsentieren, der das von Kämpgen und Harth \cite{kampgen2011transforming} vorgestellte Konzept in eine horizontal skalierende Architektur auf der Basis von Apache Hadoop überführt.
+
+\section{Verwendete Technologien}
+Bevor auf die einzelnen Komponenten und deren Zusammenspiel in der Architektur eingegangen wird, sollen die in der Konzeption verwendeten Technologien genauer beschrieben werden. Ähnlich zur Herangehensweise bei der Definition des Begriffs \glqq Business Intelligence\grqq{} in Kapitel \ref{sec:konzepte-und-prozesse} wird im ersten Abschnitt \ref{sub:kylin} ein Projekt aus der Datenbereitstellungsschicht in Form von Apache Kylin vorgestellt. In Abschnitt \ref{sub:mondrian} wird das Open-Source-Projekt Mondrian aus der Analyseschicht einer näheren Betrachtung unterzogen.
+
+\subsection{Apache Kylin}
+\label{sub:kylin}
+Vor der Veröffentlichung von \textit{Apache Kylin}\footnote{ s. Apache Kylin Webseite unter \url{http://kylin.incubator.apache.org/}.} im Jahr 2014 war es im Open-Source-Bereich nicht ohne weiteres möglich, auf Basis von Apache Hadoop das OLAP-Konzept für interaktive Abfragen auf Grundlage einer beliebig großen Datenmenge effizient umzusetzen. Es wurden zwar einige Arbeiten zum Thema \textit{OLAP-on-Hadoop} veröffentlicht, die sich weder in der Praxis noch in der Wissenschaft etablieren konnten (vgl. \cite{chevalier2015implementing}; \cite{weidner2013fast}; \cite{zhang2013olap}; \cite{Abello}; \cite{arres2013building}).
+
+Die von eBay im Oktober 2014 veröffentlichte OLAP-Engine Apache Kylin zeigt einen interessanten Ansatz, um die in der klassischen Business Intelligence seit vielen Jahren etablierten OLAP Cubes mit Unterstützung der Hadoop-Plattform in die Big-Data-Welt zu übertragen. Der Einsatz von Kylin wird durch etablierte Open-Source-Projekte aus dem Hadoop-Ökosystem begünstigt, die seit vielen Jahren von einer Vielzahl von Unternehmen produktiv eingesetzt werden.
+
+Die folgende Abbildung \ref{fig:kylin-architektur} stellt das Zusammenspiel der Hadoop-Komponenten in Kylins Architektur dar. Dabei ist zwischen einem \textit{Offline}- und \textit{Online}-Datenfluss zu unterscheiden.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\textwidth]{kylin-architektur}
+  \caption{Kylin-Architektur mit Komponenten aus dem Hadoop-Ökosystem, in Anlehnung an \url{http://kylin.apache.org/}.}
+  \label{fig:kylin-architektur}
+\end{figure}
+
+\begin{description}
+  \item[Offline-Datenfluss] \hfill \\
+  Die Generierung des OLAP Cubes setzt die Speicherung der Daten im HDFS und die Modellierung dieser Daten in Apache Hive als Sternschema voraus. Zusätzlich werden Metainformationen benötigt, welche die Cube-Struktur und die später möglichen OLAP-Abfragen beschreiben. Im Offline-Datenfluss (blauer Pfad in Abbildung \ref{fig:kylin-architektur}) greift die \textit{Cube Build Engine} auf diese Metainformationen zu und generiert mit mehreren, hintereinander ausgeführten HiveQL-Abfragen die Cuboids. Durch die Übersetzung der HiveQL-Abfragen in MapReduce-Jobs findet eine parallele Verarbeitung statt (s. Abschnitt \ref{sub:hive}).
+
+  Für die Speicherung der Cuboids wird die NoSQL-Datenbank HBase verwendet. Im nicht-relationalen, spaltenorientierten und verteilten Wide Column Store werden die vorberechneten Aggregationen der verschiedenen Cuboids gespeichert und über das Cluster hinweg horizontal verteilt (s. vorangehender Abschnitt HBase \ref{sub:hbase}).
+
+  Kylin bietet die Möglichkeit, den Offline-Pfad für neu hinzukommende Daten inkrementell auszuführen. Dies kann in beliebigen Zeitabschnitten erfolgen, wie z.\,B. jede Stunde, einmal am Tag oder einmal im Monat. Mit dieser Eigenschaft wird im Rahmen der Abschlussarbeit das in der Einleitung vorgestellte Problem (V3) untersucht.
+  \item[Online-Datenfluss] \hfill \\
+  Nach der erfolgreichen Generierung des OLAP Cubes stehen die Daten für die Analysen zur Verfügung. Der Online-Datenfluss (grüner Pfad in Abbildung \ref{fig:kylin-architektur}) beschreibt die Interaktion mit Kylin. Dabei werden SQL-Anfragen entweder direkt über die REST-Schnittstelle oder mithilfe der mitgelieferten Treiber und einem SQL-basierten BI-Tool an den REST\footnote{ REST steht für \textit{Representational State Transfer} und beschreibt ein zustandsloses Client-Server-Protokoll über HTTP. }-Server gesendet.
+
+  In der SQL-Query-Engine schreibt Apache Calcite\footnote{ s. Apache Calcite Webseite \url{http://calcite.apache.org/}} die SQL-Abfrage in HBase Requests um. Wurden die angefragten Daten im HBase Cube vorberechnet, können die SQL-Abfragen, durch die horizontale Speicherung der Cuboids mit einer Ausführungszeitn im (Sub-)Sekundenbereich beantwortet werden. Das entspricht dem \textit{Low-Latency-Pfad} in Abbildung \ref{fig:kylin-architektur} (grüner, durchgezogener Pfad).
+
+  Sind die angeforderten Daten der SQL-Abfrage nicht vorberechnet, kann das SQL-Statement an Apache Hive weitergeleitet werden. Hierbei wandelt Hive die Query in MapReduce-Jobs um, deren Abarbeitung mit einem entsprechenden Overhead und Latenzen verbunden ist (s. MapReduce Abschnitt \ref{sub:mapreduce}). Das entspricht der Ausführung der SQL-Anfrage im \textit{Mid-Latency-Pfad} (grüner, gestrichelter Pfad). Je nach Datenmenge eignet sich der Vorgang nur eingeschränkt für interaktive Analysen.
+\end{description}
+
+Das wesentliche Ziel von Kylin besteht darin, für möglichst viele Abfragen des Nutzers den Low-Latency-Pfad bereitzustellen. Aus diesem Grund sind während der Definition des OLAP Cubes die Anforderungen der Analysten für die betriebliche Entscheidungsfindung bestmöglich zu berücksichtigen.
+
+\subsubsection{Definition des OLAP-Datenmodells in Kylin}
+\label{subsub:kylin-datenmodell}
+Kylin setzt für die Generierung des OLAP Cubes die Abbildung der Daten in Apache Hive im Sternschema voraus. Bevor mit der eigentlichen Daten-Modellierung des OLAP Cubes begonnen werden kann, sind die Tabellen aus dem Hive Metastore mit Kylin zu synchronisieren. Dabei werden im Hintergrund Metainformationen zu den Hive-Tabellen erstellt und in eine eigens dafür vorgesehene HBase-Tabelle gespeichert. Dadurch stehen der Modellierung des OLAP Cubes alle notwendigen Informationen zur Verfügung, wie beispielsweise die Spaltennamen der Dimensionstabellen oder die Datentypen der Measures. Erst nach dieser Synchronisierung kann die Daten-Modellierung des Cubes Schritt für Schritt interaktiv in der Weboberfläche oder mit der dafür vorgesehenen REST-Schnittstelle mit einem JSON Request aufgebaut werden.
+
+Der erste Schritt besteht in der Definition des OLAP-Datenmodells. Nach Auswahl der Faktentabelle sind die Dimensionstabellen zu definieren und um Angaben der \textit{Primary}- und \textit{Foreign Keys} zu ergänzen.
+
+Die Beschreibung der Dimensionen findet anhand von drei unterschiedlichen Typen statt: \textit{Normal}, \textit{Hierarchy} und \textit{Derived}. Bei der Auswahl \glqq Normal\grqq{} wird die Dimension ohne jede Besonderheit zum Cube hinzugefügt. Beim Typ \glqq Hierarchy\grqq{} bietet Kylin eine hierarchische Anordnung der Attribute einer Dimension an. Wie bereits in Abschnitt \ref{subsub:olap-functions} beschrieben, spielt diese Art der Anordnung der Daten eine wichtige Rolle für die Drill-down- und Roll-up-Navigation durch den Cube. Die letzte Möglichkeit, eine Dimension hinzuzufügen, besteht im Typ \glqq Derived\grqq{}. Hierbei handelt es sich um Attribute einer Dimension, die keinem hierarchischen Aufbau entsprechen und sich eindeutig durch einen Primary Key ableiten lassen. Die Berechnung der Measures basiert folglich lediglich auf diese einzelnen Keys. Das führt zu einer Reduktion der Kombinationsmöglichkeiten der Dimensionen, da nicht jede mögliche Zusammenstellung der Spaltenwerte berücksichtig werden.
+
+Zusätzlich zu den Dimensionen müssen die Measures des OLAP Cubes definiert werden. Die Auswahl der Aggregationsfunktionen ist zum Zeitpunkt der Abschlussarbeit auf \textit{SUM}, \textit{MIN}, \textit{MAX}, \textit{COUNT} und \textit{COUNT\_DISTINCT} beschränkt.
+
+Optional können sogenannte \textit{Refresh Settings} definiert werden. Dies ermöglicht OLAP Cubes mit neu hinzukommenden Daten zu generieren und mit bestehenden Cubes zu vereinen. Hierbei ist eine Date-Spalte im Format \glqq YYYY-MM-DD\grqq{} auszuwählen und ein Startdatum anzugeben.
+
+Kylin bietet zudem die Möglichkeit, erweiterte Einstellungen zu definieren, die eine Optimierung des Cubes ermöglichen. Bei einer großen Anzahl an Dimensionen ist es nicht sinnvoll, jedes Cuboid zu berechnen. Beispielsweise wären bei 30 Dimensionen $2^{30}$ (etwas mehr als eine Milliarde) Cuboids zu erstellen. Mit \textit{Aggregation Groups} kann eine Unterteilung dieser 30 Dimensionen in Gruppen durchgeführt und so ein Partial Cube definiert werden (s. Abschnitt \ref{subsub:molap}). Statt $2^{30}$ Cuboids zu generieren, kann der Cube beispielsweise in drei Gruppen à 10 Dimensionen aufgeteilt werden. Die Anzahl der Cuboids reduziert sich dadurch auf $2^{10} + 2^{10} + 2^{10}$ (= 3072 Cuboids). Sowohl die Berechnungszeit der Aggregationen als auch der Speicherverbrauch des OLAP Cubes werden hierdurch deutlich reduziert. Bei ungünstiger Wahl der Aggregation Groups kann jedoch ein fehlendes Cuboid die Ausführungszeit der Analyse stark beeinträchtigen (s. Mid-Latency-Pfad in Abbildung \ref{fig:kylin-architektur}).
+
+\subsubsection{Der Cube Build Process}
+\label{subsub:kylin-cube-build-process}
+Nach erfolgreicher Modellierung des OLAP Cubes ist die Ausführung des \textit{Cube-Build}-Prozesses möglich. Anhand der Metainformationen und der Datenmodellierung werden die Aggregate in den verschiedenen Kombinationsmöglichkeiten der Dimensionen berechnet. Abbildung \ref{fig:kylin-cube-build} stellt den Workflow dar.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{kylin-cube-build}
+  \caption{Kylins Cube-Build-Prozess als Workflow.}
+  \label{fig:kylin-cube-build}
+\end{figure}
+
+Im ersten Teil des Prozesses wird ein \textit{Dictionary} angelegt. Das Dictionary wird bei Dimensionen verwendet, die keine große Kardinalität besitzen. In solch einem Fall speichert Kylin bei der Generierung des OLAP Cubes nicht den eigentlichen Wert in die HBase-Datenbank, sondern eine Referenz zum Dictionary. Diese Einstellung kann pro Spalte der Dimensionstabellen individuell angegeben werden.
+
+Im nächsten Abschnitt des Prozesses werden alle verwendeten Hive-Tabellen des OLAP Cubes zunächst in einer \textit{Intermediate Hive Table} zusammengefasst. Dabei wird in einer einzelnen HiveQL-Abfrage die Faktentabelle mit allen Dimensionstabellen in der Intermediate Hive-Tabelle vereint und gespeichert. Diese Tabelle dient als Grundlage für die Generierung des größtmöglichen N-Cuboids (vgl. Abbildung \ref{fig:cuboids} in Abschnitt \ref{subsub:molap}). Durch verschiedene Gruppierungen werden mithilfe mehrerer hintereinander ausgeführter MapReduce-Jobs die immer kleiner werdenden Cuboids berechnet, bis der 0-Cuboid ermittelt wird. Ein ausreichend großer Speicherplatz im HDFS ist zwingend erforderlich, da alle Zwischenergebnisse als \textit{HDFS Sequence Files} abgelegt werden.
+
+Sind die Cuboids berechnet, werden die Zwischenergebnisse in einem letzten MapReduce-Job in eine \textit{HFile} transformiert. HFiles sind Dateien im HDFS, die HBase für die Datenspeicherung verwendet. Der letzte Schritt besteht im Importieren dieser HFile in HBase in Form eines \textit{Bulk-Load}-Prozesses.
+
+Je nach Größe der Datenmenge und der Anzahl der Knoten des Clusters kann der Build-Prozess einige Zeit beanspruchen. Anschließend sind die Vorbereitungen für die Verarbeitung analytischer OLAP Queries abgeschlossen.
+
+\subsubsection{Vor- und Nachteile von Kylin}
+
+Die Vorteile von Apache Kylin sind vielfältig. Es handelt sich um den ersten erfolgreichen Versuch, OLAP-Funktionalitäten auf Apache Hadoop aufzusetzen. Zudem basiert das Open-Source-Projekt aufgrund der Verwendung von HDFS, Hive, MapReduce, HBase und Calcite auf Systemen aus dem Hadoop-Ökosystem, die sich in den letzten Jahren etabliert haben. Der produktive Einsatz von Kylin bei eBay zeigt das Potenzial des Projektes. Die Möglichkeit der horizontalen Skalierung im Cube-Build-Prozess sowie die horizontale Verteilung der Cuboids durch HBase führt dazu, dass Kylin enorm große Datensätze verarbeiten und die vorberechneten Daten für Analysen effizient bereitstellen kann.
+
+Ein wesentlicher Nachteil besteht jedoch in der eingeschränkten Abfragemöglichkeit: Kylin kann ausschließlich SQL-Abfragen interpretieren. Aus diesem Grund wird im nächsten Abschnitt Pentahos MDX-to-SQL Engine Mondrian vorgestellt.
+
+\subsection{Pentaho Mondrian}
+\label{sub:mondrian}
+MDX ist eine Abfragesprache, welche häufig bei komplexen OLAP-Operationen gewählt wird (s. Abschnitt \ref{sub:mdx}). Aus diesem Grund setzen viele OLAP Client MDX als Standardsprache ein. Neben dem Vorteil der erweiterten Selektierbarkeit besteht eine weitere Stärke von MDX darin, mit Roll-Up- und Drill-Down-Operationen durch Hierarchien entlang eines Pfades zu navigieren. Jedoch ist die Anzahl der Datenbanken, die MDX interpretieren und verarbeiten können, gering. Infolgedessen wurde bereits 2001 das Projekt Mondrian\footnote{ s. Pentaho Mondrian Webseite unter \url{http://community.pentaho.com/projects/mondrian/}.} begonnen - ein quelloffener, in Java entwickelter OLAP Server (vgl. \cite[S.~3]{back2013mondrian}). Auf der einen Seite wollen Analysten MDX-Abfragen für ihre Analysen nutzen, auf der anderen Seite jedoch nicht auf die einfache Anwendung und Nutzung von relationalen Datenbanken verzichten. Um auf die Daten einer relationalen Datenbank mit MDX zuzugreifen, muss eine Umwandlung der MDX-Abfragen in SQL stattfinden. Diese Transformation war eines der wichtigen Ziele bei der Entwicklung von Mondrian.
+
+Ein weiteres Ziel bei der Entwicklung von Mondrian bestand darin, interaktive Analysen von größere Datenmengen zu ermöglichen. Die relationalen Daten müssen daher im Sternschema angeordnet sein. Zusätzlich wurde in Mondrian ein Cache implementiert, der aus bereits ausgeführten SQL-Abfragen einen multidimensionalen OLAP Cube erstellt, um nachfolgende MDX-Abfragen direkt über den Cube im Cache beantworten oder das Ergebnis ableiten zu können. Abbildung \ref{fig:mondrian-architektur} zeigt ein typisches Ablaufdiagramm in Mondrian.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.70\textwidth]{mondrian-architektur}
+  \caption{Ablaufdiagramm von Mondrian bei der Ausführung einer MDX-Abfrage, in Anlehnung an \cite[S.~12]{back2013mondrian}.}
+  \label{fig:mondrian-architektur}
+\end{figure}
+
+Die MDX-Abfragen können entweder über einen OLAP Client wie Saiku\footnote{ s. Saiku Webseite \url{http://www.meteorite.bi/products/saiku}.} oder direkt über einen API Call, z.\,B. mit der Java-Bibliothek OLAP4J\footnote{ s. OLAP4J Webseite \url{http://www.olap4j.org/}.}, an den Mondrian-Server gesendet werden. Nach Validierung der MDX-Abfrage wird überprüft, ob das Ergebnis mit Hilfe von zuvor ausgeführten MDX-Abfragen und durch Speicherung der Ergebnisse als OLAP Cube im Cache beantwortet werden kann. Falls dies möglich ist, wird das Ergebnis direkt aus dem Cache abgeleitet und als MDX Result Set zurück an den OLAP Client gesendet. Kann die Abfrage nicht aus den Daten im Cache abgeleitet werden, werden unter Zuhilfenahme des Mondrian Schema eine Folge von SQL-Anfragen generiert und an das Data Warehouse gesendet. Die Einzelresultate werden zu einem Ergebnisse aggregiert, zusammengefasst und im Cache in einer multidimensionalen Struktur als Cube gespeichert, sodass dieses Ergebnis bei späteren Abfragen wiederverwendet werden kann. Der letzte Schritt besteht im Zurücksenden des von Mondrian ermittelten Resultats als MDX Result Set an den OLAP Client.
+
+Mondrian operiert in der Regel mit klassischen relationalen Datenbanken wie MySQL oder PostgreSQL. Die Beziehungen zwischen den relationalen und den multidimensionalen Strukturen werden im sogenannten \textit{Mondrian Schema} definiert. Diese in XML beschriebene Konfigurationsdatei gibt die Tabellen und Spalten des relationalen Datenbankschemas an und definiert die Faktentabelle als auch die Dimensionstabellen des multidimensionalen OLAP Cubes. Zusätzlich werden alle Measures des Cubes, die verwendeten Aggregationsfunktionen, Hierarchien in den Dimensionen mit ihren Levels und Attributen im Mondrian Schema deklariert.
+
+Ferner kann Mondrian durch \textit{SQL Dialects} erweitert werden, um die Kommunikation mit anderen Datenbanken zu ermöglichen, die SQL-Abfragen oder zumindest eine Teilmenge davon interpretieren können. Ein weiteres Ziel der vorliegenden Arbeit wird daher in der Implementierung eines Kylin Dialects bestehen, die die Beantwortung von MDX-Abfragen in Apache Kylin realisieren soll.
+
+\section{Idee und Aufbau der Architektur}
+
+Der eingangs in Abschnitt \ref{Zielsetzung} beschriebene ETL-Prozess von Kämpgen und Harth \cite{kampgen2011transforming} transformiert die Statistical Linked Data einer RDF-Datenbank durch mehrere, hintereinander ausgeführten SPARQL-Abfragen in ein multidimensionales Datenmodell. Aufgrund der Metainformationen im QB-Vokabular ist es möglich, die RDF-Daten automatisiert in eine relationale Datenbank im Sternschema zu speichern und für OLAP-Abfragen bereitzustellen.
+
+Wie bereits erläutert, sind Technologien aus dem Big-Data-Umfeld für die Analyse einer enorm großen Datenmenge notwendig. Der hier präsentierte Lösungsansatz überführt daher Kämpgen und Harths ETL-Prozess in eine horizontal skalierende Architektur auf der Basis von Apache Hadoop. Die nicht-skalierbaren Komponenten, wie die RDF-Datenbank, die Abfragesprache SPARQL und die relationale Datenbank werden dabei durch Technologien und Frameworks aus dem Hadoop-Ökosystem ersetzt. Abbildung \ref{fig:etl-architektur} veranschaulicht die neue Gesamtarchitektur. Die Hauptziele bestehen darin, die Ausführungsdauer zur Beladung des Data Warehouses sowie die Antwortzeiten analytischer OLAP-Abfragen auch bei einem beliebig großen Datenvolumen zu reduzieren.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{etl-architektur}
+  \caption{Parallelisierungsarchitektur des ETL-Prozesses mit MapReduce zur Bewirtschaftung der RDF-Daten im QB-Vokabular in Apache Kylin.}
+  \label{fig:etl-architektur}
+\end{figure}
+
+Für die Umsetzung der Architektur ist neben einem funktionierenden Apache Hadoop Cluster auch eine fehlerfreie Installation von Apache Kylin auf einem Cluster-Knoten notwendig. Im Rahmen dieser Arbeit wird Kylin auf dem Master-Knoten installiert.
+
+Die Umsetzung des ETL-Prozesses besteht aus fünf Komponenten, wie in Abbildung \ref{fig:etl-architektur} dargestellt wird. Die Konzeptionen der einzelnen Komponenten sowie deren Aufgaben werden in den nächsten Abschnitten beschrieben.
+
+\subsection{Komponente 1: Umzug der RDF-Daten nach Hive}
+Wie bereits im Abschnitt \ref{sub:rdf-data-cube-vocabulary} beschrieben, beinhalten RDF-Daten, die durch das QB-Vokabular beschrieben werden, neben den eigentlichen statistischen Daten zusätzliche Metainformationen, die die Struktur des OLAP Cubes beschreiben. Die statistischen Linked Data müssen für die später stattfindende parallele Ausführung des ETL-Prozesses in das Hadoop-Ökosystem umgezogen werden.
+
+Vor dem Umzug der RDF-Daten ins HDFS muss eine Transformation stattfinden. Die durch verschiedene Syntaxen beschriebenen RDF-Daten werden in das zeilenbasierte N-Triples-Format umgewandelt. Dies hat folgende Gründe:
+\begin{itemize}
+\item Das einfache N-Triples-Format enthält pro Zeile genau ein Triple der Form Subjekt, Prädikat und Objekt. Durch diese einfache Struktur ist es möglich, die Hive-Tabelle QB\_Triples mit drei Spalten (\textit{subject}, \textit{predicate}, \textit{object}) zu generieren.
+\item Aufgrund der Speicherung im HDFS werden die Daten in Datenblöcke mit einer bestimmten Größe aufgeteilt, horizontal über die verschiedenen Datanodes des Clusters verteilt und repliziert (s. Abschnitt \ref{sub:hdfs}). Ein nicht-zeilenbasiertes Format könnte dazu führen, dass ein Triple über mehrere Zeilen in zwei unterschiedliche Datenblöcke getrennt wird. Dies würde zu fehlenden Triples und einem fehlerhaften Verhalten beim Auslesen der Triples führen.
+\end{itemize}
+
+Folglich ist es notwendig, die RDF-Daten vor dem Umzug in das HDFS in das zeilenbasiertes N-Triples-Format umzuwandeln. Nach dieser Transformation und dem Umzug ins HDFS kann die Hive-Tabelle \textit{QB\_Triples} durch eine \textit{Create-HiveQ}L-Abfrage erstellt werden. Ziel der RDF-2-Hive-Komponenten ist es, der nächsten Komponente \textit{MDM-Loader} die Möglichkeit zu bieten, die Struktur des OLAP Cubes aus den RDF-Daten im QB-Vokabular mit mehreren, hintereinander ausgeführten HiveQL-Abfragen aus der Hive-Tabelle QB\_Triples auszulesen.
+
+\subsection{Komponente 2: Auslesen des multidimensionalen Models}
+Nach Generierung der Hive-Tabelle QB\_Triples werden mithilfe von verschiedenen, hintereinander ausgeführten HiveQL-Abfragen die Metainformationen aus dem RDF im QB-Vokabular ausgelesen. Diese Aufgabe übernimmt die zweite Komponente \textit{MDM-Loader}. Die Abfragen haben das Ziel, alle Cube-Informationen mit effizienten HiveQL-Abfragen auszulesen. Die Definition geeigneter HiveQL-Abfragen und der daraus entstehenden MapReduce-Jobs führt zur parallelen Verarbeitung der Abfragen über die Cluster-Knoten. Dabei werden die Measures, Dimensionen, Hierarchien, Levels, Attribute und Fact Members des OLAP Cubes aus einer beliebig großen Menge an RDF-Daten ermittelt.
+
+Grundlegendes Ziel ist eine geeignete Repräsentation des Datenmodells. Zudem werden in dieser Komponente bereits Metainformationen definiert und Vorbereitungen für die darauffolgenden Schritte getätigt. Wie bereits im Abschnitt \ref{subsub:kylin-datenmodell} dargestellt, müssen die Daten für Kylin in Hive im Sternschema vorliegen. Folglich werden bereits anhand der ausgelesenen Informationen aus dem MDM die Tabellen- und Spaltennamen der Faktentabelle und der Dimensionstabellen generisch bestimmt. Zudem beinhaltet das MDM alle erforderlichen Metainformationen wie die Datentypen sowie Primary-Key- und Foreign-Key-Zuweisungen des Sternschemas.
+
+Ausgehend vom MDM und den ausgelesenen Metainformationen aus den RDF-Daten im QB-Vokabular werden die restlichen drei Komponenten ausgeführt.
+
+\subsection{Komponente 3: Generierung des Sternschemas in Hive}
+\label{sub:komp3}
+Alle relevanten Daten müssen vor der Generierung des OLAP Cubes in Hive-Tabellen im Sternschema modelliert werden. Demnach ist eine Transformation der Hive-Tabelle QB\_Triples in Hive-Tabellen des Sternschemas notwendig. Hive bietet die Möglichkeit, eine neue Tabelle aus bereits bestehenden Tabellen durch einen HiveQL-Statement zu generieren. Solche Abfragen werden im Hive-Kontext als \textit{CTAS}-Statements (Create Table As Select) bezeichnet. Für die Generierung des Sternschemas werden durch die zuvor ausgelesenen Informationen aus der QB\_Triples-Tabelle die Fakten- und alle Dimensionstabellen erstellt. Die Schwierigkeit liegt darin, das zeilenbasierten Format der QB\_Triples-Tabelle (jede Zeile repräsentiert ein Triple, eine konkrete Instanz einer Dimension kann mehrere Attribute und dadurch mehrere Zeilen lang sein) in ein spaltenorientiertes Format umzuwandeln (jede Zeile repräsentiert ein Objekt, die Spalten stellen die Attribute dar).
+
+\subsection{Komponente 4: Metadata Modell und Cube Build in Kylin}
+Der REST-Server von Kylin bietet, neben der Möglichkeit SQL-Abfragen auszuführen, noch weitere Funktionen an. Die dritte Komponente \textit{MDM-2-Kylin} nutzt diese Möglichkeit, um folgende REST Requests auszuführen:
+\begin{description}
+  \item[Optional: Neues Projekt erstellen] \hfill \\
+  Bevor der OLAP Cube generiert werden kann, ist optional ein neues Projekt in Kylin anzulegen. Neben dem Namen des Projekts ist auch die Angabe einer Beschreibung möglich.
+  \item[Synchronisation] \hfill \\
+  Die Synchronisation der Hive-Tabellen in Kylin erfolgt durch einen einfachen REST Request. Ähnlich zum Hive-Metastore werden hierbei Informationen über die synchronisierten Tabellen generiert und in einer dafür speziell vorgesehene HBase-Tabelle gespeichert.
+  \item[OLAP-Datenmodell definieren] \hfill \\
+  Nach der Synchronisierung werden die Metainformationen des zu generierenden OLAP-Datenmodells mit einem weiteren REST Request an Kylin übermittelt. Aus diesem Grund ist eine Transformation des zuvor ausgelesenen MDMs in ein JSON-Format notwendig. Kylin benötigt folgende Metainformationen für den Cube Designer:
+
+  \begin{itemize}
+    \item Deklaration der Faktentabelle in Hive.
+    \item Festlegung der Hive-Tabellen, die die Dimensionstabellen des OLAP Cubes repräsentieren. Zusätzliche Informationen beinhalten den Join-Typ (\textit{Inner}-, \textit{Left}-, \textit{Right}-Join) und die Join-Bedingung (\textit{Foreign-Key}- und \textit{Primary-Key}-Zuweisung).
+    \item Informationen über den Aufbau der einzelnen Dimensionen: Hierarchien, Levels, und Attribute. Zudem sind Dimensionen, die durch eine Spalte in der Faktentabelle definiert werden, ebenfalls anzugeben.
+    \item Deklaration der Measures des OLAP Cubes durch Angabe des Datentyps, der Aggregationsfunktion und der zugehörigen Spalte der Faktentabelle.
+    \item Optionale Definition von Refresh-Settings und Aggregation Groups (s. Erläuterung in Abschnitt \ref{subsub:kylin-datenmodell}).
+  \end{itemize}
+  \item[Cube-Build-Prozess anstoßen] \hfill \\
+  Die dritte Aufgabe der MDM-2-Kylin-Komponente besteht darin, den Cube-Build-Prozess über den REST-Server zu starten. Aufgrund der Dauer des Prozesses soll der aktuelle Stand in einem definierten Intervall abgefragt und dem Benutzer mitgeteilt werden.
+\end{description}
+
+\subsection{Komponente 5: Mondrian Schema definieren}
+
+Die letzte Komponente hat die Aufgabe, aus den Informationen des MDMs ein Mondrian Schema zu generieren. Diese XML-Konfigurationsdatei wird in Mondrian benötigt, um die MDX-Abfragen des OLAP Clients in ein für Kylin verständliches SQL umzuwandeln (s. Abschnitt \ref{sub:mondrian}). Hierbei findet eine Transformation des MDMs in das XML-Format statt. Nach diesem Schritt ist der ETL-Prozess beendet.
+
+\section{Ziele der Architektur}
+Erst nach erfolgreichem Abschluss der fünf Komponenten ist es möglich, die Daten entweder mit MDX-Abfragen über einen OLAP Client wie Saiku mit Mondrian, über die SQL REST-Schnittstelle in Kylin oder über ein SQL-basiertes BI-Tool wie Tableau\footnote{ s. Webseite von Tableau unter \url{http://www.tableau.com/de-de/business-intelligence}.} und dem JDBC-Treiber abzufragen.
+
+Die Dauer des ETL-Prozesses richtet sich nach der Menge der zu verarbeitenden Daten und der Anzahl der Cluster-Knoten. Eine Hypothese dieser Abschlussarbeit liegt in der Überprüfung, ob die parallele Ausführung durch die hintereinander ausgeführten HiveQL-Abfragen und der Generierung von MapReduce-Jobs einen Vorteil gegenüber nicht horizontal skalierenden ETL-Prozessen mit sich bringt?
+
+Ein weiteres Ziel liegt in der Reduzierung der Ausführungsdauer bei analytischen OLAP-Abfragen. In Abhängigkeit der Clustergröße soll durch die horizontale Speicherung der Cuboids in HBase die Abfragedauer auch bei einer beliebig großen Datenmenge im Sekundenbereich liegen.
+
+Nach der Definition des Konzepts wird im nächsten Kapitel die Implementierung, der technische Aufwand, die dabei entstandenen Probleme sowie die verwendeten HiveQL-Abfragen einer genaueren Betrachtung unterzogen.

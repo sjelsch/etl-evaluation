@@ -1,0 +1,116 @@
+% Datei : iflstyle.sty
+% ******************************************************************
+%
+%                LaTeX-Style f"ur Diplomarbeiten am IFL
+%
+%   Autor  : Christian Lippolt
+% ******************************************************************
+%
+% BoundingBox im Header des PS-Files
+% eine DIN A4 Seite hat Seitenbreite 595 und Seitenhoehe 842
+% %%BoundingBox: 0 0 595 842
+%
+\def\fileversion{0.4}
+\def\filedate{98/10/14}
+\ProvidesPackage{iflstyle}[1998/07/01 Version 001]
+\typeout{Package: iflstyle\space\filedate\space v\fileversion}
+\typeout{... IFL-Diplomarbeit/Studienarbeit Latex Environment Definitions}
+\ProcessOptions
+%
+% *****  Abstand zwischen den Abs"atzen auf 1.5 Zeilen setzen  *****
+%
+\setlength{\parskip}{1.5ex}
+%
+% *****  Zeilenabstand auf 1.5 Zeilen setzen  *****
+%
+\renewcommand{\baselinestretch}{1.3}
+%
+% *****   Einzug am Absatzanfang auf 0 setzen  *****
+%
+\setlength{\parindent}{0em}
+%
+% *****   Definition mathematischer Mengensymbole  *****
+%
+\def\C{{\rm C\hspace*{-.45em}\rule{0.2ex}{1.55ex}} \,\;}
+\def\R{{\rm I\hspace{-0.4ex}R}}
+\def\Q{{\rm Q\hspace*{-.45em}\rule{0.2ex}{1.55ex}} \;}
+\def\Z{{\rm Z\hspace{-.37em}Z}}
+\def\N{{\rm I\hspace{-0.4ex}N}}
+\newcommand{\mb}[1]{\mbox{\boldmath$#1$}}
+
+
+
+
+\def\usesf{}
+\let\usesf\sffamily
+
+\newsavebox{\Erstgutachter}
+\savebox{\Erstgutachter}{\usesf Prof.~Dr.~Rudi~Studer}
+\newsavebox{\Zweitgutachter}
+\savebox{\Zweitgutachter}{\usesf Dr.~Benedikt~Kämpgen}
+
+\thispagestyle{empty}
+
+\newcommand{\blankpage}{
+ \clearpage{\pagestyle{empty}\cleardoublepage}
+}
+
+\newcommand{\ifltitle}[7]{
+    \vspace*{-40pt}
+    \hspace{-14mm}
+
+    \begin{tabular}{l}
+
+      \parbox[b][][c]{\textwidth}{
+        \begin{center}
+          {\Large \textbf{\textsc{Karlsruher Institut f"ur Technologie  \vspace{2mm}} }}\\
+          {\normalsize \textsc{Institut f"ur Angewandte Informatik und formale Beschreibungssprachen} }\\
+        \end{center}
+      }
+
+    \end{tabular}
+
+  \begin{center}
+    \hbox{}
+    \vfill{
+      \usesf{
+        \huge\bfseries Optimierung von Analytischen Abfragen über Statistical Linked Data durch Horizontale Skalierung
+        \par
+      }
+      \vskip 1.8cm
+      {\large{Diplomarbeit}}\\
+
+      \vskip 0.8cm
+      von\\
+      \vskip 1cm
+      {\large\bfseries Sébastien Jelsch\\}
+      \vskip 1cm
+      im Studiengang Informatik \\[8mm]
+      \vskip 3cm
+      \begin{tabular}{p{5.5cm}l}
+        Referent: & \usebox{\Erstgutachter} \\
+        Betreuender~Mitarbeiter: & \usebox{\Zweitgutachter} \\
+      \end{tabular}
+      \vskip 1cm
+      Bearbeitungszeit:\qquad 14.~Juli~2015 -- 07.~Januar~2016
+    }
+    \blankpage
+  \end{center}
+\vfill
+
+}
+
+\newcommand{\iflrecht}[2]{
+\thispagestyle{empty}
+\
+  \vfill
+
+Ich erkl"are hiermit, dass ich die vorliegende Arbeit selbst"andig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt, die w"ortlich oder inhaltlich "ubernommenen Stellen als solche kenntlich gemacht und die Satzung des KIT zur Sicherung guter wissenschaftlicher Praxis in der jeweils g"ultigen Fassung beachtet habe.\\
+
+\begin{center}
+\raggedright #2\\
+\vspace*{-2ex}
+\dotfill\\
+Ort, Datum \hfill (#1)\\
+\end{center}
+}

@@ -1,0 +1,12 @@
+\blankpage
+
+\chapter*{Kurzzusammenfassung}
+\addcontentsline{toc}{chapter}{Kurzzusammenfassung}
+
+In den letzten Jahren ist die Menge der verfügbaren Linked Data im World Wide Web stetig gestiegen. Immer mehr Provider veröffentlichen ihre statistischen Datensätze nach dem Linked-Data-Prinzip, um diese Daten mit weiteren Informationen aus unterschiedlichen Quellen anreichern zu können. Durch die Verlinkung beliebiger Zusatzinformationen sollen die Daten näher bestimmt und neue Erkenntnisse erlangt werden.
+
+Bevor Analysten jedoch in der Lage sind, solche statistischen Daten vergleichen zu können, verbringen sie unverhältnismäßig viel Zeit mit der Identifizierung, Erfassung und Aufbereitung der relevanten Daten. Zusätzlich führt die zunehmende Größe an verfügbaren RDF-Datensätzen dazu, dass diese nicht mehr effizient auf einem einzelnen Rechner analysiert werden können. Aus diesem Grund sind für Analysen großer Datenmengen Technologien aus dem Big-Data-Umfeld notwendig, die diese Beschränkungen mittels Parallelisierung über viele Rechner hinweg überwinden. In der Folge ist für die Analyse einer beliebig großen RDF-Datenmenge ein Lösungsansatz erforderlich, der diese Datensätze generisch und automatisiert in ein horizontal skalierbares Open Source OLAP-System integriert, die Daten in geeigneter Form aufbereitet und dem Nutzer präsentiert.
+
+In dieser Arbeit wird ein horizontal skalierbarer Extract-, Transform- und Load-Prozess (ETL-Prozess) konzipiert, umgesetzt und im Hinblick auf die Ausführungszeit für die Integration der RDF-Daten in das OLAP-System Apache Kylin evaluiert. Des Weiteren werden die Antwortzeiten analytischer MDX- und SQL-Abfragen untersucht. Die Ergebnisse zeigen, dass der ETL-Prozess erst ab einer größeren Datenmenge einen Vorteil gegenüber Import-Vorgängen in nicht-horizontal skalierenden Systemen bietet. Jedoch werden analytische Abfragen in diesem System aufgrund der horizontalen Skalierung in sehr kurzer Zeit beantwortet.
+
+\textbf{Schlüsselwörter:} Linked Data, Data Cube, Parallelisierung, MapReduce

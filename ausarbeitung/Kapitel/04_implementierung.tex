@@ -1,0 +1,457 @@
+\chapter{Implementierung}
+\label{cha:Implementierung}
+
+In diesem Kapitel wird auf die technische Implementierung sowie auf die Anforderungen des ETL-Prozesses detailliert eingegangen. Zunächst wird in Abschnitt \ref{sec:kylin-kommunikation} die entwickelte Kommunikationsmöglichkeit zwischen Apache Kylin und Pentaho Mondrian durch einen SQL-Dialekt für die Ausführung von MDX-Abfragen behandelt. Anschließend werden die im vorherigen Kapitel definierten Komponenten des ETL-Prozesses auf technischer Ebene anhand eines abstrakten Beispiels verdeutlicht. Die Anforderungen, die entstandenen Probleme mit ihren Lösungsansätzen sowie weitergehende Optimierungsmöglichkeiten werden in den folgenden Abschnitten beschrieben.
+
+\section{Kommunikation zwischen Apache Kylin und Mondrian}
+\label{sec:kylin-kommunikation}
+Mondrian übersetzt MDX-Abfragen in SQL-Statements für unterschiedliche relationale sowie nicht-relationale Datenbanken. Zum Zeitpunkt der Abschlussarbeit existiert jedoch kein SQL-Dialekt für die Generierung von SQL-Abfragen für Apache Kylin. Wie bereits im Abschnitt \ref{sub:kylin} beschrieben, kann Kylin durch die Integration von Apache Calcite eine ANSI-SQL-Teilmenge interpretieren. Daher werden viele SQL-Abfragen erfolgreich in HBase Requests umgesetzt, einige wenige wie z.\,B. implizit angegebenen Joins bleiben jedoch nicht ausführbar. Listing \ref{list:kylin-join-implicit} zeigt ein einfaches Beispiel einer SQL-Abfrage, die von Kylin nicht ausgeführt werden kann.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={Beispiel einer SQL-Anfrage mit impliziten Join.},label=list:kylin-join-implicit]
+-- Join-Anfrage, die von Kylin nicht unterstützt wird
+SELECT *
+FROM Fact, Dim1
+WHERE Fact.dim1_id = Dim1.id;
+\end{lstlisting}
+\end{minipage}
+
+Demnach müssen Joins durch das SQL-Schlüsselwort \textit{JOIN} und der direkt darauffolgenden \textit{ON}-Bedingung deklariert werden (s. Listing \ref{list:kylin-join-explicit}).
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={Beispiel einer SQL-Anfrage mit expliziten Join.},label=list:kylin-join-explicit]
+-- Join-Anfrage, die von Kylin unterstützt wird
+SELECT *
+FROM Fact
+JOIN Dim1 ON Fact.dim1_id = Dim1.id;
+\end{lstlisting}
+\end{minipage}
+
+Zudem unterstützt Kylin keine \textit{Distinct Counts}. Die Integration von Mondrian in Kylin setzt daher ein SQL-Dialekt voraus, welcher für Kylin verständliche SQL-Abfragen generiert.
+
+\subsection{Kylin SQL-Dialekt in Mondrian erstellen}
+
+Mondrian stellt Methoden bereit, um mit einem SQL-Dialekt das gewünschte SQL-Statement zu generieren. Das in Listing \ref{list:kylin-join-implicit} vorgestellte Implicit-Join-Problem kann durch die Methode aus Listing \ref{list:kylin-sql-dialekt-join} gelöst werden.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=Java,caption={Generierung von expliziten SQL-Joins durch die Methode \textit{allowsJoinOn()}.},label=list:kylin-sql-dialekt-join]
+public boolean allowsJoinOn() {
+  return true;
+}
+\end{lstlisting}
+\end{minipage}
+
+Der Einsatz des Kylin Dialekts erwies sich bei der Umsetzung in Mondrian 3 als fehlerhaft. Die Methode \textit{allowsJoinOn()} wurde bei der Generierung der SQL-Abfragen nicht berücksichtigt. Dieser Fehler wurde in Mondrian 4 behoben. Folglich wurde für den weiteren Verlauf der Abschlussarbeit Mondrian 4 verwendet.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=Java,caption={Deaktivierung der \textit{DISTINCT COUNT}-Methode im Kylin-SQL-Dialekt durch die Methode \textit{allowsCountDistinct()}.},label=list:kylin-sql-dialekt-count]
+public boolean allowsCountDistinct() {
+  return false;
+}
+\end{lstlisting}
+\end{minipage}
+
+Die nächste zu implementierenden Methode in Kylins Dialect ist \textit{allowsCountDistinct()}, die \textit{false} als Rückgabewert hat (s. Listing \ref{list:kylin-sql-dialekt-count}), da Kylin zum Zeitpunkt der Arbeit solch eine Count-Abfrage nicht unterstützt.
+
+\section{Implementierung der ETL-Komponenten}
+
+Für die Entwicklung des ETL-Prozesses wurde die Programmiersprache Java gewählt. Mithilfe des JDBC-Treibers von Apache Hive wird der Zugriff auf die QB\_Triples-Tabelle und die Generierung der Hive-Tabellen im Sternschema ermöglicht. %Die Ausführung des ETL-Prozesses muss dabei direkt auf einem der Knoten des Rechner-Clusters ausgeführt werden. Zusätzlich ist vor dem Start zu überprüfen, ob der Benutzer die notwendigen Rechte besitzt, im HDFS neue Ordner und in Hive neue Tabellen anzulegen.
+
+Zum besseren Verständnis wird dieser technische Abschnitt anhand eines abstrakten Beispiels beschrieben. Zur Veranschaulichung dient die Abbildung \ref{fig:qb-graph-example}. Die zu analysierenden RDF-Daten im QB-Vokabular beschreiben in diesem Beispiel einen OLAP Cube mit zwei Measures: \textit{measure1} (Gleitkommazahl vom Typ \glqq double\grqq{} und der Aggregationsfunktion \glqq sum\grqq{}) und \textit{measure2} (Ganzzahl vom Typ \glqq int\grqq{} und der Aggregationsfunktion \glqq max\grqq{}). Zusätzlich stellen die RDF-Daten zwei Dimensionen \textit{dim1} und \textit{dim2} dar. Die erste Dimension \textit{dim1} besitzt zwei Hierarchien: \textit{hier1} mit drei Levels (\textit{level1\_1}, \textit{level1\_2} und \textit{level1\_3}) sowie \textit{hier2} mit zwei Levels (\textit{level2\_1} und \textit{level2\_2}). Die zweite Dimension \textit{dim2} verfügt über eine Hierarchie \textit{hier3} mit zwei Levels \textit{level3\_1} und \textit{level3\_2}. Ein Fakt enthält neben den Measures noch Verlinkungen zu konkreten Instanzen der Dimensionen.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\textwidth]{qb-graph-example}
+  \caption{Veranschaulichung des verwendeten Beispiels zur Beschreibung der Umsetzung der technischen Komponenten des ETL-Prozesses.}
+  \label{fig:qb-graph-example}
+\end{figure}
+
+\subsection{Komponente 1: Umzug der RDF-Daten nach Hive}
+Vor dem Umzug der RDF-Daten ins HDFS findet eine Transformation der RDF-Daten in das N-Triples-Format statt. Hierfür wird bei der Umsetzung auf Apache Jena zurückgegriffen. Die Jena-Komponente \textit{RIOT} (RDF I/O Technology) transformiert eine Eingabedatei mit beliebigen RDF-Format in das N-Triples-Format. Der dazugehörige Code-Abschnitt ist in Listing \ref{list:rdf-transformation} zu finden.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=bash,caption={Umwandlung der RDF-Daten in das N-Triples-Format mit Apache Jena.},label=list:rdf-transformation]
+./bin/riot --output=nt rdf_file_1.xml rdf_file_2.ttl rdf_file_3.nt > all_triples.nt
+\end{lstlisting}
+\end{minipage}
+
+Der Umzug der RDF-Daten ins HDFS findet über den in Listing \ref{list:rdf-to-hdfs} dargestellten Befehl statt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=bash,caption={Umzug der Daten ins HDFS in durch einen Befehl in der HDFS Shell.},label=list:rdf-to-hdfs]
+hadoop fs -copyFromLocal /path/on/disk /path/on/hdfs
+\end{lstlisting}
+\end{minipage}
+
+Im Abschnitt \ref{sub:hive} wurde beschrieben, dass die zugrundeliegenden I/O-Bibliotheken HiveQL-Abfragen auf unterschiedliche Datenstrukturen erlauben. Aus diesem Grund ist nach dem Umzug der RDF-Daten ins HDFS die Generierung einer sogenannten \textit{External Hive Table} durch ein einzelnes HiveQL-Statement möglich. Eine External Hive Table ist eine Hive-Tabelle, die durch Angabe einer \textit{Location} eine Tabelle mit Daten aus einem existierenden HDFS-Ordner erstellt. Die HiveQL-Abfrage erstellt die Tabelle \textit{QB\_Triples} mit drei Spalten (\textit{subject}, \textit{predicate}, \textit{object}) über die RDF-Daten im N-Triples-Format. Listing \ref{list:rdf-hive-external} zeigt die verwendete HiveQL-Abfrage für die Erstellung der External Hive Table.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={Generierung einer externen Hive-Tabelle durch eine HiveQL-Abfrage.},label=list:rdf-hive-external]
+CREATE EXTERNAL TABLE QB_Triples ( subject STRING, predicate STRING, object STRING )
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
+WITH SERDEPROPERTIES ( "input.regex" = "([^ ]*) ([^ ]*) (.*) \\.",  "output.format.string" = "%1$s %2$s %3$s" )
+STORED AS TEXTFILE LOCATION '/path/on/hdfs';
+\end{lstlisting}
+\end{minipage}
+
+Die Location gibt den absoluten HDFS-Pfad des Ordners an, in dem sich die RDF-Daten befinden. Die Anzahl der RDF-Dateien ist irrelevant für die Generierung der Hive-Tabelle.
+
+Der reguläre Ausdruck gibt die zu interpretierende Datenstruktur für die Generierung der Hive-Tabelle an. Wie in Abschnitt \ref{subsub:ntriples} beschrieben, definiert N-Triples ein zeilenbasiertes Format der Form \glqq <SubjectURI> <PredicateURI> <ObjektURI> .\grqq{}. Mit dem regulären Ausdruck \glqq$([\textasciicircum\;]*)\;([\textasciicircum\;]*)\;(.*)\;\backslash\backslash.$\grqq{} werden die drei Spalten für die Hive-Tabelle QB\_Triples deklariert. Die \textit{Stored-As}-Anweisung gibt den Datentyp der Daten im HDFS-Ordner an.
+
+Von diesem Zeitpunkt an können die RDF-Daten der Hive-Tabelle QB\_Triples mit HiveQL-Abfragen ausgelesen werden. Jedoch eignet sich die Speicherung der Daten im HDFS als reine Textdateien nur bedingt für die Ausführung von MapReduce-Jobs. Aus diesem Grund können bereits in dieser Komponente Optimierungen durchgeführt werden, die eine Reduzierung der Ausführungszeiten der HiveQL-Abfragen zur Folge haben.
+
+\subsubsection{Optimierungen bei der Generierung der Hive-Tabelle}
+\label{subsub:hive-optimierungen}
+Die Speicherung der RDF-Daten als reine Textdateien im HDFS und die Generierung einer External Hive Table führt nicht zu effizienten Ausführungszeiten der HiveQL-Abfragen. Durch die unkomprimierte Speicherung der RDF-Daten können die Dateien im N-Triples-Format sehr groß werden. Dies führt zu langen Ausführungszeiten der MapReduce-Jobs. Grund hierfür ist die Aufteilung der Daten in Blöcke bei der Speicherung im HDFS (s. Abschnitt \ref{sub:hdfs}). Standardgemäß wird eine Datei in 128MB großen Datenblöcke aufgeteilt und horizontal über das Cluster verteilt. Wenn beispielsweise die Größe der N-Triples-Datei 10GB beträgt, sind bereits knapp 80 MapReduce-Jobs für die Berechnung der einzelnen Datenblöcken mit jeweils 128MB notwendig. Zwar kann der Datenblock-Wert bei jedem Upload ins HDFS individuell festgelegt, jedoch im Nachhinein nicht ohne ein erneutes Hochladen der Dateien geändert werden.
+
+\paragraph{Optimierung 1: Dateigröße durch komprimierendes Datenformat reduzieren}
+\mbox{}\\
+Zur Reduzierung der Dateigrößen kann nach der Generierung der External Hive Table eine neue Hive-Tabelle erstellt werden, die die Daten aus der External Hive Table ausliest und in einem bestimmten, komprimierten Format im HDFS speichert. Listing \ref{list:rdf-hive-interal} zeigt die Generierung der Hive-Tabelle \textit{QB\_Triples\_comp} im \textit{PARQUET}-Format.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={Generierung einer Hive-Tabelle durch eine HiveQL-Create-Abfrage unter Anwendung des komprimierten PARQUET-Datenformats.},label=list:rdf-hive-interal]
+CREATE TABLE QB_Triples_comp ( subject STRING, object STRING, predicate STRING ) STORED AS PARQUET;
+\end{lstlisting}
+\end{minipage}
+
+Das Einfügen der Daten aus der External Hive Table QB\_Triples erfolgt durch das HiveQL-Statement aus Listing \ref{list:rdf-hive-interal-insert}.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL Statement zum Einfügen der Daten aus der Hive-Tabelle QB\_Triples in die neue Tabelle QB\_Triples\_comp.},label=list:rdf-hive-interal-insert]
+INSERT INTO TABLE QB_Triples_comp
+SELECT subject, object, predicate FROM QB_Triples;
+\end{lstlisting}
+\end{minipage}
+
+Nach Ausführung dieser HiveQL-Statements sind die RDF-Daten in der neuen Tabelle QB\_Triples\_comp vorhanden und können mit HiveQL-Abfragen effizienter abgefragt werden. Im HDFS werden die Dateien im komprimierten PARQUET-Datenformat gespeichert. Dies reduziert die Größe der Dateien und gleichermaßen die Anzahl der benötigten MapReduce-Jobs bei der Ausführung der HiveQL-Abfragen.
+
+\paragraph{Optimierung 2: Schnellere Ausführung der HiveQL-Abfragen durch Partitionierung}
+Gemäß der Standardeinstellungen legt eine Hive-Tabelle ihre Daten in einem bestimmten HDFS-Ordner ab. Ungeachtet der Verwendung eines komprimierten Datenformats wie PARQUET können HiveQL-Abfragen von enorm große Datenmengen weiterhin zu langen Ausführungszeiten führen.
+
+Eine weitere Optimierung bei der Ausführungszeit kann durch das sogenannte \textit{Partition}-Prinzip erzielt werden. In Hive führt eine Partitionierung dazu, dass die Daten anhand eines festgelegten Spalten-Werts in Unterordnern gespeichert werden.
+
+Bei drei Spalten führt dies zur Überlegung, welche der Spalten (\textit{subject}, \textit{predicate}, \textit{object}) als geeigneter Kandidat für die Partition ausgewählt werden kann. Aufgrund der Tatsache, dass die Anzahl an URIs für \textit{subjects} und \textit{objects} prinzipiell sehr hoch ist, handelt es sich bei diesen beiden Spalten um keine geeigneten Kandidaten. Eine zu hohe Anzahl an Unterordnern führt zu dem Effekt, dass viele kleine Dateien durch eine Vielzahl von MapReduce-Jobs geladen und gelesen werden müssen. Wie später im Kapitel \ref{cha:evaluation} zu sehen ist, wird sich die Spalte \textit{predicates} als geeigneter Kandidat für die Partitionierung erweisen.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL-Statement zur Generierung einer Hive-Tabelle unter Anwendung des PARQUET-Datenformats und der \textit{predicate}-Partitionierung.},label=list:rdf-hive-interal-partition]
+CREATE TABLE QB_Triples_comp ( subject STRING, object STRING )
+PARTITIONED BY (predicate STRING) STORED AS PARQUET;
+\end{lstlisting}
+\end{minipage}
+
+Für den Einsatz einer Partition werden die HiveQL-Statements aus Listing \ref{list:rdf-hive-interal} und Listing \ref{list:rdf-hive-interal-insert} angepasst. Die Resultate sind in Listing \ref{list:rdf-hive-interal-partition} und \ref{list:rdf-hive-interal-insert-partition} zu finden.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL-Statement zum Einfügen der Daten in eine Hive-Tabelle mit Partition nach der Spalte \textit{predicate}.},label=list:rdf-hive-interal-insert-partition]
+INSERT INTO TABLE QB_Triples_comp PARTITION (predicate)
+SELECT subject, object, predicate FROM QB_Triples;
+\end{lstlisting}
+\end{minipage}
+
+Die vorgestellten Optimierungen haben jedoch den Nachteil, dass eine weitere Tabelle generiert werden muss. Dieser Prozess benötigt weiteren Speicherplatz im HDFS und zusätzliche Ausführungszeit bei der Generierung der Hive-Tabelle QB\_Triples\_comp. Die Dauer der Generierung dieser Hive-Tabelle wird in der Evaluation im Hinblick auf die Ausführungszeit des ETL-Prozesses sowie auf die HiveQL-Abfragen zur Ermittlung der Metainformationen untersucht.
+
+\subsection{Komponente 2: Multidimensionales Model auslesen}
+Nach der Speicherung der Triples in der Hive-Tabelle QB\_Triples\footnote{ Der Name der Hive-Tabelle QB\_Triples ist in diesem und in den kommenden Abschnitten unabhängig davon gewählt, ob die Optimierungen aus dem Abschnitt \ref{subsub:hive-optimierungen} angewendet wurden oder nicht.} werden die Metainformationen aus dem RDF Data Cube Vocabulary mithilfe von verschiedenen, hintereinander ausgeführten HiveQL-Abfragen ausgelesen und in ein in Java modelliertes, multidimensionales Datenmodell gespeichert. Diese Aufgabe übernimmt die zweite Komponente \textit{MDM-Loader}. Abbildung \ref{fig:mdm-model} zeigt die konzeptionelle Umsetzung des multidimensionalen Datenmodells.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\textwidth]{mdm-model}
+  \caption{Konzeptionelle Umsetzung des MDM-Modells.}
+  \label{fig:mdm-model}
+\end{figure}
+
+Die HiveQL-Abfragen sollen die im folgenden aufgelisteten Cube-Informationen mit effizienten HiveQL-Abfragen auslesen.
+
+\subsubsection{QB Measures}
+Measures im QB-Vokabular (\textit{qb:MeasureProperty}) werden durch die Property \textit{qb:measure} beschrieben (s. Beispiel-Graph in Abbildung \ref{fig:qb-measures}). Zusätzliche Informationen, die bei jedem einzelnen Measure ausgelesen werden, sind im Folgenden beschrieben.
+\begin{enumerate}
+  \item Jedes Measure kann optional ein Literal mit der Property \textit{rdfs:label} enthalten. Diese Zeichenkette dient als Name des Measures und wird später im Mondrian Schema angegeben. Fehlt diese Angabe, wird die Bezeichnung der URI verwendet.
+  \item Jedes Measure besitzt optional einen Datentyp, beschrieben durch die Property \textit{rdfs:range}. Datentypen können z.\,B. durch die URIs \textit{xsd:int}, \textit{xsd:long}, \textit{xsd:float} oder \textit{xsd:double} repräsentiert werden. Besitzt ein Measure keinen Datentyp, wird die URI \glqq xsd:int\grqq{} als Standardwert gewählt.
+  \item Jedes Measure kann optional eine Aggregationsfunktion besitzen, beschrieben durch die Property \textit{qb4o:aggregateFunction}. Aggregationsfunktionen können z.\,B. durch die URIs \textit{qb4o:sum}, \textit{qb4o:min}, \textit{qb4o:max}, \textit{qb4o:count} oder \textit{qb4o:avg} dargestellt werden. Bei fehlender Angabe wird die URI \glqq qb4o:sum\grqq{} verwendet.
+\end{enumerate}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{qb-measures}
+  \caption{Beispiel eines RDF-Graphs zur Beschreibung der Measures im QB-Vokabular.}
+  \label{fig:qb-measures}
+\end{figure}
+
+Wie in Abbildung \ref{fig:qb-measures} am ersten Measure zu erkennen ist, sind die auszulesenden Informationen entweder am Subjekt \glqq rdfh:measureComp1\grqq{} oder am Subjekt \glqq rdfh:measure1\grqq{} angehängt. Zum Auslesen der benötigten Informationen werden drei HiveQL-Abfragen benötigt. Diese sind in Listing \ref{list:qb-model-measures} dargestellt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL-Statement zum Auslesen der QB-Measure-Informationen.},label=list:qb-model-measures]
+SELECT * FROM QB_Triples WHERE
+  predicate = "<http://purl.org/linked-data/cube#measure>";
+
+SELECT * FROM QB_Triples WHERE
+  predicate = "<http://purl.org/qb4olap/cubes#aggregateFunction>";
+
+SELECT * FROM QB_Triples WHERE
+  predicate IN ( "<http://www.w3.org/2000/01/rdf-schema#range>",
+    "<http://www.w3.org/2000/01/rdf-schema#label>" )
+  AND subject IN ( "<http://lod2.eu/schemas/rdfh#measure1>",
+    "<http://lod2.eu/schemas/rdfh#measure2>" );
+\end{lstlisting}
+\end{minipage}
+
+Aus dem Ergebnis der ersten HiveQL-Abfrage wird für jedes gefundene \textit{qb:measure} ein Java-Objekt \textit{Measure} erstellt. Die zweite Abfrage liest die zugehörigen Aggregationsfunktionen der Measures aus. Die dritte HiveQL-Abfrage führt dazu, dass die Labels und die Ranges ausgelesen werden.
+
+\subsubsection{QB Dimensions}
+Die Dimensionen (\textit{qb:DimensionProperty}) des OLAP Cubes werden im QB-Vokabular durch die Property \textit{qb:dimension} definiert. Wie im Graph in Abbildung \ref{fig:qb-dimensions} an der ersten Dimension \textit{rdfh:dim1} zu erkennen ist, sind die auszulesenden Informationen am Subjekt \glqq rdfh:dim1\grqq{} angehängt. Das HiveQL-Statement zum Auslesen der Informationen der QB Dimensions wird im Listing \ref{list:qb-model-dimensions} dargestellt. Aus dem Ergebnis der HiveQL-Abfrage wird für jedes gefundene qb:dimension ein Java-Objekt \textit{Dimension} erstellt. Die Hierarchien und die jeweiligen Levels werden in gesonderten HiveQL-Abfragen ausgelesen.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL-Statement zum Auslesen der Dimensionen im QB-Vokabular.},label=list:qb-model-dimensions]
+SELECT * FROM QB_Triples WHERE
+  predicate = "<http://purl.org/linked-data/cube#dimension>";
+\end{lstlisting}
+\end{minipage}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{qb-dimensions}
+  \caption{Beispiel eines RDF-Graphs zur Beschreibung der Dimensionen im QB-Vokabular.}
+  \label{fig:qb-dimensions}
+\end{figure}
+
+\newpage
+
+\subsubsection{QB Hierarchies}
+Hierarchien im QB-Vokabular (\textit{qb:CodedProperty}) werden durch die Property \textit{qb:codeList} bestimmt. Wie im vorangegangenen Abschnitt in Abbildung \ref{fig:qb-dimensions} an der ersten Dimension \textit{rdfh:dim1} zu erkennen ist, sind die auszulesenden Informationen am Subjekt \glqq rdfh:dim1\grqq{} angehängt. Das HiveQL-Statement zum Auslesen der Informationen der QB Hierarchies wird im Listing \ref{list:qb-model-hierarchies} dargestellt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL-Statement zum Auslesen der Hierarchien im QB-Vokabular.},label=list:qb-model-hierarchies]
+SELECT * FROM QB_Triples WHERE
+  predicate = "<http://purl.org/linked-data/cube#codeList>";
+\end{lstlisting}
+\end{minipage}
+
+Analog zu den Dimensionen wird für jede gefundene Hierarchie ein Java-Objekt \textit{Hierarchy} erstellt. Ferner wird die Hierarchie an die jeweils zugehörige Dimension in einer Java-Collection hinzugefügt. Die weiteren Informationen, wie beispielsweise welche Levels die ermittelten Hierarchien besitzen, werden in der nächsten HiveQL-Abfrage ausgelesen.
+
+\subsubsection{QB Levels}
+In einer Hierarchie werden die Levels (\textit{skos:Concept}) durch die Property \textit{skos:inScheme} bestimmt. Als zusätzliche Information wird bei jedem einzelnen Level die \glqq Tiefe\grqq{} (engl. \textit{depth}) ausgelesen. Die Tiefe gibt eine explizite Darstellung der Reihenfolge der verschiedenen Levels einer Hierarchie an. %Der Graph in Abbildung \ref{fig:qb-levels} zeigt ein einfaches Beispiel, wie im QB-Vokabular die Levels einer Hierarchie dargestellt werden können.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{qb-levels}
+  \caption{Beispiel eines RDF-Graphs zur Beschreibung der Levels von Hierarchien einer Dimension im QB-Vokabular.}
+  \label{fig:qb-levels}
+\end{figure}
+
+Wie in Abbildung \ref{fig:qb-levels} zu erkennen ist, sind die Levels am Subjekt \glqq rdfh:hier1\grqq{} bzw. \glqq rdfh:hier2\grqq{} angehängt. Die zusätzliche Information ist jedoch direkt mit dem Level verbunden. Infolgedessen ist bei der Abfrage dieser Informationen ein Join über die QB\_Triples-Tabelle notwendig. Das HiveQL-Statement zum Auslesen der Informationen der QB Levels wird in Listing \ref{list:qb-model-levels} dargestellt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={HiveQL-Statement für das Auslesen der Levels einer Hierarchie im QB-Vokabular.},label=list:qb-model-levels]
+SELECT qbTbl1.subject, qbTbl1.object, qbTbl2.object as depth
+FROM QB_Triples as qbTbl1
+JOIN QB_Triples as qbTbl2 ON (qbTbl1.subject = qbTbl2.subject)
+WHERE
+  qbTbl1.predicate = "<http://www.w3.org/2004/02/skos/core#inScheme>"
+  AND qbTbl2.predicate = "<http://purl.org/linked-data/xkos#depth>";
+\end{lstlisting}
+\end{minipage}
+
+Die bereits in der vorherigen HiveQL-Abfrage generierten MDM-Hierarchien (s. Listing \ref{list:qb-model-dimensions}) werden um die ausgelesenen Levels erweitert. Analog zur Speicherung der Hierarchien in den Dimensionen, werden die Levels einer Hierarchie in einer Java-Collection gespeichert.
+
+\subsubsection{QB Attributes}
+Das Ziel bei der Umsetzung des ETL-Prozesses ist die Generierung des kleinstmöglichen OLAP Cubes in Kylin. Mit den vorgestellten HiveQL-Abfragen wird ein multidimensionales Datenmodell definiert, das alle notwendigen Informationen beinhaltet, um Daten mit hierarchischem Aufbau analysieren zu können. Sollen jedoch Analysen auf Daten durchgeführt werden, die keinem hierarchischem Aufbau entsprechen, muss in Kylin ein OLAP Cube definiert werden, der alle Attribute in den Vorberechnungen der Cuboids einbezieht.
+
+Der Graph in Abbildung \ref{fig:qb-attributes} zeigt ein einfaches Beispiel, wie im QB-Vokabular die Attribute, die keinem hierarchischem Aufbau entsprechen, dargestellt werden können.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\textwidth]{qb-attributes}
+  \caption{Beispiel eines RDF-Graphs zur Beschreibung der Attribute einer Dimensions-Instanz im QB-Vokabular.}
+  \label{fig:qb-attributes}
+\end{figure}
+
+Wie in dieser Abbildung zu erkennen ist, sind die auszulesenden Informationen am Subjekt \glqq rdfh:dim1Inst1\grqq{} angehängt. Aus diesem Grund ist bei der Abfrage dieser Informationen ein Join über die QB\_Triples-Tabelle anhand der Property \textit{skos:member} notwendig. Das HiveQL-Statement zum Auslesen der Informationen wird in Listing \ref{list:qb-model-attributes} dargestellt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={Relevanter Ausschnitt des HiveQL-Statements zum Auslesen der Attribute der Dimensionen im QB-Vokabular.},label=list:qb-model-attributes]
+SELECT qbTbl1.subject, qbTbl2.predicate
+FROM QB_Triples AS qbTbl1
+JOIN QB_Triples AS qbTbl2 ON (qbTbl2.subject = qbTbl1.object)
+WHERE
+  qbTbl1.subject IN (
+    "<http://lod2.eu/schemas/rdfh#level1_3>",
+    "<http://lod2.eu/schemas/rdfh#level2_2>",
+    "<http://lod2.eu/schemas/rdfh#level3_2>", ...
+  )
+  AND qbTbl1.predicate = "<http://www.w3.org/2004/02/skos/core#member>"
+GROUP BY qbTbl1.subject, qbTbl2.predicate
+\end{lstlisting}
+\end{minipage}
+
+Für jedes Attribut wird ein Java-Objekt \textit{Attribute} erstellt und an die zugehörige Dimension in einer Java-Collection gespeichert. Nach dieser letzten Abfrage enthält das multidimensionale Datenmodell allen notwendigen Metainformationen aus dem QB-Vokabular. %Die Ausführung der MDM-Loader-Komponente ist somit beendet.
+
+\subsection{Komponente 3: Sternschema in Hive generieren}
+
+Nach der Generierung des MDMs ist eine Transformation der Hive-Tabelle QB\_Triples in das Sternschema notwendig. Die Hauptaufgabe der dritten Komponente \textit{MDM-2-Starschema} besteht darin, mit so wenigen CTAS-Abfragen die zeilenbasierten Daten aus der QB\_Triples-Tabelle in ein spaltenbasiertes Format zu transformieren.
+
+\subsubsection{Dimensionstabellen in Hive generieren}
+Für jede Dimension aus dem MDM soll eine Dimensionstabelle in Hive generiert werden, die alle Hierarchien und Levels als Spalten enthält. Der Primary-Key wird bei jeder Dimension in der Spalte \textit{key} gespeichert.
+
+Für alle Levels einer Hierarchie wird eine eigene Spalte angelegt. Besitzt die Dimension nur eine Hierarchie, kann in einer einzelnen CTAS-HiveQL-Abfrage die Dimensionstabelle generiert werden. Anderensfalls ist für jede Hierarchie ein CTAS-HiveQL-Statement zu definieren, welches die Dimensionstabelle um die Levels der nächsten Hierarchie durch das Hinzufügen von neuen Spalten erweitert. Listing \ref{list:hiveql-create-dim-table-one-hierarchy} zeigt den relevanten Teil der CTAS-HiveQL-Abfrage.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={CTAS-HiveQL-Statement zur Generierung einer Dimensionstabelle anhand der Informationen aus dem MDM.},label=list:hiveql-create-dim-table-one-hierarchy]
+CREATE TABLE dim2 STORED AS PARQUET AS
+SELECT qbTbl1.object AS key, qbTbl2.subject AS level3_1, ... , qbTbl3.object AS attribute1, ...
+FROM QB_Triples qbTbl1
+LEFT JOIN QB_Triples qbTbl2 ON (qbTbl2.object = qbTbl1.object
+  AND qbTbl2.predicate = "<http://www.w3.org/2004/02/skos/core#narrower>") ...
+LEFT JOIN QB_Triples qbTbl3 ON (qbTbl3.subject = qbTbl1.object
+  AND qbTbl3.predicate = "<http://lod2.eu/schemas/rdfh#attribute1>") ...
+WHERE qbTbl1.subject = "<http://lod2.eu/schemas/rdfh#leve3_2>"
+  AND qbTbl1.predicate = "<http://www.w3.org/2004/02/skos/core#member>";
+\end{lstlisting}
+\end{minipage}
+
+Die Navigation durch die Levels einer Hierarchie wird durch die Properties \textit{skos:narrower} und \textit{skos:member} ermöglicht. Bei mehr als zwei Levels findet durch die Angaben von \textit{LEFT}-Joins eine Navigation entlang der \textit{narrower}-Property bis zum letzten Level statt.
+
+\subsubsection{Die Faktentabelle in Hive generieren}
+Die Informationen zur Faktentabelle werden aus dem MDM ausgelesen. Für jedes Measure gilt es, eine Spalte in Hive zu definieren. Der Datentyp der Spalte wird aus dem Wert im MDM ausgelesen. Ferner wird für jeden Fremdschlüssel eine Spalte mit der Bezeichnung der Dimension und dem Datentyp String angelegt. Listing \ref{list:hiveql-create-fact-table} zeigt den relevanten Ausschnitt der CTAS-HiveQL-Abfrage, mit dem alle Fakten ausgelesen und in einer Tabelle mit dem Titel \textit{facts} gespeichert werden.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=SQL,caption={Relevanter Ausschnitt des CTAS-HiveQL-Statements zur Generierung der Faktentabelle anhand der Informationen aus dem MDM.},label=list:hiveql-create-fact-table]
+CREATE TABLE facts STORED AS PARQUET AS
+SELECT
+  qbTbl1.subject AS key,
+  qbTbl2.object AS dim1, ...
+  cast(qbTbl3.object AS DOUBLE) measure1, ...
+FROM QB_Triples qbTbl1
+LEFT JOIN QB_Triples qbTbl2 ON ( qbTbl2.subject = qbTbl1.subject
+  AND qbTbl2.predicate = "<http://lod2.eu/schemas/rdfh#dim1>" ) ...
+LEFT JOIN QB_Triples qbTbl3 ON ( qbTbl3.subject = qbTbl1.subject
+  AND qbTbl3.predicate = "<http://lod2.eu/schemas/rdfh#measure1>" ) ...
+WHERE
+  qbTbl1.object = "<http://purl.org/linked-data/cube#Observation>"
+  AND qbTbl1.predicate = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+\end{lstlisting}
+\end{minipage}
+
+Durch die \textit{Cast}-Methode findet bei jedem Measure eine Typumwandlung vom String-Wert in den zuvor ausgelesenen Datentyp des jeweiligen Measures statt. Das Ergebnis dieser CTAS-Abfrage hat die Generierung der Faktentabelle mit allen Observations zur Folge. Tabelle \ref{tab:hiveql-create-fact-table-result} zeigt einen möglichen Ausschnitt der Faktentabelle.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l|l|l|l|l}
+\textbf{key} & \textbf{dim1} & \textbf{dim2} & \textbf{measure1} & \textbf{measure2} \\ \hline \hline
+rdfh-inst:fact1 & rdfh-inst:dim1Inst1 & rdfh-inst:dim2Inst1 & 1.99 & 29\\ \hline
+rdfh-inst:fact2 & rdfh-inst:dim1Inst7 & rdfh-inst:dim2Inst1 & 13.37 & 1986\\ \hline
+\end{tabular}
+\caption{Tabellarische Darstellung der generierten Faktentabelle nach Ausführung der CTAS-HiveQL-Abfrage aus Listing \ref{list:hiveql-create-fact-table}.}
+\label{tab:hiveql-create-fact-table-result}
+\end{table}
+
+Die Vorbereitungen für die Generierung des OLAP Cubes in Kylin sind nach diesem Schritt abgeschlossen. Die MDM-2-Starschema-Komponente hat aus der QB\_Triples-Tabelle die Hive-Tabellen des Sternschemas generiert; die Grundlage der nächsten Komponente.
+
+\subsection{Komponente 4: Metadata Modell und Cube Build in Kylin}
+
+Ist die Transformation der QB\_Triples-Tabelle in Hive-Tabellen im Sternschema abgeschlossen, werden in der vierten Komponente \textit{MDM-2-Kylin} alle notwendigen Schritte für die Generierung des OLAP Cubes in Kylin ausgeführt. Die Vorbereitungen bestehen aus vier Schritten: Dem optionalen Anlegen eines Kylin-Projektes, der Synchronisation der Hive-Tabellen, der Definition des Cube-Modells sowie aus dem Start des Cube-Build-Prozesses. Die Ausführung und die Beschreibungen der Teilkomponenten sind Gegenstand der nächsten Abschnitte.
+
+\subsubsection{Optional: Generierung eines Projektes}
+Die Generierung eines neuen Projektes in Apache Kylin erfolgt durch einen REST Request. Die Informationen beinhalten den Titel und eine kurze Beschreibung des Projektes. Die Angabe dieser Informationen kann vor Ausführung des ETL-Prozesses individuell festgelegt werden. Listing \ref{list:kylin-create-project} zeigt den REST Request. Es ist darauf zu achten, dass der Titel des Projektes in Kylin nur einmalig vorkommen darf.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=json,caption={JSON REST Request zur Generierung eines neuen Projektes in Kylin.},label=list:kylin-create-project]
+{ "description": "Project for RDF QB Data.", "name": "project_rdf_qb" }
+\end{lstlisting}
+\end{minipage}
+
+\subsubsection{Synchronisation der Hive-Tabellen}
+Wurde das Projekt angelegt, ist eine Synchronisation der Hive-Tabellen in Kylin notwendig (s. Abschnitt \ref{subsub:kylin-datenmodell}). Anhand der ausgelesenen Informationen des MDMs ist bekannt, welchen Bezeichnung die Fakten- und welche Bezeichnung die Dimensionstabellen besitzen. Die Übermittlung der Hive-Tabellen findet durch die kommaseparierte Auflistung der relevanten Tabellen in einem REST Request statt. Zusätzlich muss der Titel des Projektes für die Synchronisation übermittelt werden.
+
+\subsubsection{Generierung des Cube Data Models}
+Nach der Synchronisation der Hive-Tabellen werden die zuvor ausgelesenen Informationen aus dem MDM in ein JSON-Modell umgewandelt und an Kylin gesendet. Der JSON Request wird in zwei Teilen untergegliedert.
+
+\begin{description}
+  \item[modelDescData] \hfill \\
+  In diesem Bereich werden alle Informationen zum Sternschema in Hive definiert. Dabei sind Angaben zur Faktentabelle und zu allen Dimensionstabellen mit Primary- und Foreign-Key-Zuweisung notwendig. Listing \ref{list:kylin-model-desc} zeigt den relevanten Ausschnitt des JSON Requests.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=json,caption={Ausschnitt des JSON Requests zur Definition der Fakten- und Dimensionstabellen.},label=list:kylin-model-desc]
+"modelDescData": {
+  "fact_table": "DEFAULT.FACTS",
+  "lookups": [ {
+    "join": {"foreign_key":["DIM1"], "primary_key":["KEY"], "type": "INNER"},
+    "table": "DEFAULT.DIM1"
+  } ] }
+\end{lstlisting}
+\end{minipage}
+
+  Eine notwendige Bedingung in Kylin ist die Großschreibung aller Tabellen und Spalten. Die Definition der Faktentabelle wird durch den Wert unter \textit{fact\_table} angegeben. Für jede Dimension des MDMs wird ein Eintrag im Array \textit{lookups} generiert.
+
+  \item[cubeDescData] \hfill \\
+  In diesem Request-Bereich werden alle Informationen des OLAP Cubes definiert. Measures werden durch die Angabe der Aggregationsfunktion, des Rückgabewertes und des Spaltennamens definiert. Alle Dimensionen als auch entsprechend alle Hierarchien und Levels müssen zusätzlich angegeben werden. Die Attribute einer Dimension werden als Kylin-Dimension vom Typ \glqq Normal \grqq{} definiert. Listing \ref{list:kylin-cube-model} zeigt den relevanten Ausschnitt des JSON Requests mit einer Hierarchie.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=json,caption={Ausschnitt des JSON Requests zur Definition des OLAP Cubes in Kylin.},label=list:kylin-cube-model]
+"cubeDescData": {
+  "measures": [ {
+      "function": {
+        "expression": "sum", "returntype": "decimal",
+        "parameter": { "type": "column", "value": "MEASURE1" }
+      },
+      "name": "Measure 1"
+  } ],
+  "dimensions": [ {
+      "column": ["LEVEL1_1","LEVEL1_2","LEVEL1_3"],
+      "hierarchy": true, "name": "Hierarchy 1", "table": "DEFAULT.DIM1"
+  } ]
+}
+\end{lstlisting}
+\end{minipage}
+
+  Analog zur Definition des Sternschemas sind die Tabellen und Spalten in Großbuchstaben anzugeben. Ferner muss bei einer Hierarchie auf die Reihenfolge der Spalten geachtet werden, damit die Hierarchie korrekt im OLAP Cube generiert wird. Dies wird anhand des \textit{depth}-Wertes im QB-Vokabular sichergestellt.
+\end{description}
+
+\subsubsection{Cube Build Process anstoßen}
+Im letzten Schritt der Komponente MDM-2-Kylin wird der Cube-Build-Prozess gestartet. Dies wird mit einem einfachen REST Request durchgeführt. Zusätzlich soll diese Komponente den Prozess überwachen und alle 10 Sekunden den aktuellen Stand des Vorgangs abfragen. Je nach Datenmenge und Größe des Clusters kann dieser Vorgang einige Zeit beanspruchen.
+
+\subsection{Komponente 5: Mondrian Schema definieren}
+
+Die letzte Komponente \textit{MDM-2-Mondrian} transformiert die Informationen aus dem MDM in ein Mondrian 4 Schema. Diese XML-Konfigurationsdatei wird in Mondrian bei der Umwandlung der MDX-Abfragen in SQL benötigt. Listing \ref{list:mondrian-schema-measures} stellt den relevanten Ausschnitt für die Measures und Listing \ref{list:mondrian-schema-dimensions} für die Dimensionen des OLAP Cubes in Kylin dar.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=XML,caption={Relevanter Ausschnitt des Mondrian Schema für die Definition der Measures aus dem MDM.},label=list:mondrian-schema-measures]
+<MeasureGroups>
+  <MeasureGroup name="Facts" table="FACTS">
+    <Measures>
+      <Measure aggregator="sum" column="MEASURE1" name="Measure 1"/>
+      <Measure aggregator="max" column="MEASURE2" name="Measure 2"/>
+    </Measures>
+    <DimensionLinks>
+      <ForeignKeyLink dimension="DIM1" foreignKeyColumn="DIM2"/>
+      <ForeignKeyLink dimension="DIM2" foreignKeyColumn="DIM2"/>
+    </DimensionLinks>
+  </MeasureGroup>
+</MeasureGroups>
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=XML,caption={Relevanter Ausschnitt des Mondrian Schema für die Definition der Dimensionen aus dem MDM.},label=list:mondrian-schema-dimensions]
+<Dimensions>
+  <Dimension key="KEY" name="DIM1" table="DIM1">
+    <Attributes>
+      <Attribute keyColumn="SUBJECT" name="SUBJECT"/>
+      <Attribute keyColumn="LEVEL1_1" name="Level 1 1"/> ...
+    </Attributes>
+    <Hierarchies>
+      <Hierarchy allMemberName="All Hier1" name="Hier1">
+        <Level attribute="Level 1 1"/>  ...
+      </Hierarchy>
+    </Hierarchies>
+  </Dimension>
+</Dimensions>
+\end{lstlisting}
+\end{minipage}
+
+Die Definition der Measures im Mondrian Schema beinhalten Informationen wie die Bezeichnung der Spalte und die Aggregationsfunktion. Im XML-Knoten \textit{Dimensions} ist für jede Dimension des OLAP Cubes ein Kinderelement \textit{Dimension} zu definieren. Des Weiteren muss für jede Hierarchie innerhalb einer Dimension ein XML-Element \textit{Hierarchy} mit den Level-Attributen erstellt werden. Analog zur Definition der Levels des Cube-Modells in Kylin ist an dieser Stelle ebenfalls auf die Reihenfolge zu achten.
+
+Nach Abschluss dieser Komponente ist der ETL-Prozess beendet. Den Analysten ist es nun möglich, OLAP-Abfragen entweder durch MDX-Statements über Mondrian oder durch SQL-Statements direkt an Kylin zu senden.
+
+Die Dauer des ETL-Prozesses richtet sich nach der Menge der zu verarbeitenden Daten und der Anzahl der Rechnerknoten im Cluster. Im folgenden Kapitel wird die Hypothese überprüft, ob die parallele Ausführung der aus den HiveQL-Abfragen generierten MapReduce-Jobs einen Vorteil gegenüber nicht horizontal skalierenden ETL-Prozessen bietet. Ein weiteres Augenmerk liegt auf der Ausführungsdauer analytischer Abfragen durch die horizontale Speicherung der Cuboids in der HBase-Datenbank.
+
+\cleardoublepage

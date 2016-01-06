@@ -1,0 +1,231 @@
+
+%--------Dokumentenart-----------------------------------------------------------------------
+
+\documentclass[DIV12,BCOR10mm,headsepline,twoside,a4paper,11pt]{scrreprt}
+
+%--------Einbinden der Packages--------------------------------------------------------------
+
+\usepackage{ngerman}
+%\usepackage[utf8]{inputenc}
+\usepackage[ansinew]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{iflstyle}
+\usepackage{german}
+\usepackage{bibgerm} %chicago
+\usepackage{url}
+\usepackage{paralist}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+% Jelsch
+\usepackage{listings}
+
+\usepackage{color}
+\definecolor{SQLBlue}{RGB}{0,102,153}
+\definecolor{SQLGreen}{RGB}{184,217,119}
+\definecolor{SQLOrange}{RGB}{250,151,73}
+\definecolor{SQLGray}{RGB}{237,237,237}
+
+\definecolor{Set1-6-1}{RGB}{90,155,213}
+\definecolor{Set1-6-2}{RGB}{165,165,165}
+\definecolor{Set1-6-3}{RGB}{67,114,196}
+\definecolor{Set1-6-4}{RGB}{196,114,67}
+
+\lstdefinelanguage{RDF}
+{
+  basicstyle={\small\upshape},
+  breaklines=true,
+  frame=single,
+  tabsize=2,
+  xleftmargin={1cm},
+  numbers=left,
+  stepnumber=1,
+  firstnumber=1,
+  numberfirstline=true,
+  language={XML},
+  captionpos=b,
+  columns=fullflexible,
+  showstringspaces=false,
+  keywordstyle=\bfseries\color{SQLBlue},
+  commentstyle=\color{gray}\upshape,
+  identifierstyle=\color{SQLGreen},
+  stringstyle=\color{blue},
+  otherkeywords={COLUMNS},
+  deletekeywords={YEAR}
+}
+
+\lstdefinelanguage{Turtle}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{SQLBlue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type}
+}
+
+\lstdefinelanguage{MDX}
+{
+  basicstyle={\small\upshape},
+  breaklines=true,
+  frame=single,
+  tabsize=2,
+  xleftmargin={1cm},
+  numbers=left,
+  stepnumber=1,
+  firstnumber=1,
+  numberfirstline=true,
+  language={SQL},
+  captionpos=b,
+  columns=fullflexible,
+  showstringspaces=false,
+  keywordstyle=\bfseries\color{SQLBlue},
+  commentstyle=\color{gray}\upshape,
+  identifierstyle=\color{black},
+  stringstyle=\color{blue},
+  otherkeywords={COLUMNS},
+  deletekeywords={YEAR}
+}
+
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+  literate=
+   *{0}{{{\color{numb}0}}}{1}
+    {1}{{{\color{numb}1}}}{1}
+    {2}{{{\color{numb}2}}}{1}
+    {3}{{{\color{numb}3}}}{1}
+    {4}{{{\color{numb}4}}}{1}
+    {5}{{{\color{numb}5}}}{1}
+    {6}{{{\color{numb}6}}}{1}
+    {7}{{{\color{numb}7}}}{1}
+    {8}{{{\color{numb}8}}}{1}
+    {9}{{{\color{numb}9}}}{1}
+    {:}{{{\color{punct}{:}}}}{1}
+    {,}{{{\color{punct}{,}}}}{1}
+    {\{}{{{\color{delim}{\{}}}}{1}
+    {\}}{{{\color{delim}{\}}}}}{1}
+    {[}{{{\color{delim}{[}}}}{1}
+    {]}{{{\color{delim}{]}}}}{1},
+}
+
+
+\lstset{
+    basicstyle={\small\upshape},
+    breaklines=true,
+    frame=single,
+    tabsize=2,
+    xleftmargin={1cm},
+    numbers=left,
+    stepnumber=1,
+    firstnumber=1,
+    numberfirstline=true,
+    language={SQL},
+    captionpos=b,
+    columns=fullflexible,
+    showstringspaces=false,
+    keywordstyle=\bfseries\color{SQLBlue},
+    commentstyle=\color{gray}\upshape,
+    identifierstyle=\color{black},
+    stringstyle=\color{blue},
+    otherkeywords={ROW,FORMAT,SERDE,WITH,SERDEPROPERTIES,STORED,LOCATION,STRING,PARTITION,PARTITIONED,DOUBLE,INT}
+}
+
+%---------Kompilieren mit Latex oder PdfLatex-------------------------------------------------
+\usepackage{ifpdf}
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+  \usepackage[pdftex, colorlinks=true, linkcolor={black}, urlcolor={black}, citecolor={black}]{hyperref}
+  \DeclareGraphicsExtensions{.jpg,.pdf,.tif,.png}
+  \graphicspath{{images/}}
+  \pdfcompresslevel=0
+  \pdfcatalog{/ViewerPreferences <</FitWindow true>>}
+  \pdfinfo{
+      /Title (Diplomarbeit)
+      /Author (Sébastien Jelsch)
+      /Subject (Optimierung von Analytischen Abfragen über Statistical Linked Data durch Horizontale Skalierung)
+      /CreationDate (07.01.2016)
+  }
+\fi
+%-----------------------------------------------------------------------------------------
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{arrows}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{pgfplots, pgfplotstable}
+\usepackage{acronym} % für Abkürzungen %[printonlyused]
+
+\pagestyle{headings}
+
+\begin{document}
+
+\ifltitle{Diplomarbeit}
+         {}
+         {Optimierung von Analytischen Abfragen über Statistical Linked Data durch Horizontale Skalierung}
+         {Sébastien Jelsch}
+         {Dipl.-Inform.~Benedikt Kämpgen}
+         {Karlsruhe, Januar 2016}
+         {}
+\iflrecht{Sébastien Jelsch}
+         {Karlsruhe, 07.01.2016}
+
+%Verzeichnisse
+  \pagestyle{headings}
+  \pagenumbering{roman}
+  \setcounter{page}{1}
+  \include{Kapitel/00_abstract}
+
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Inhaltsverzeichnis}
+  \tableofcontents
+
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+  \listoffigures
+
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+  \listoftables
+
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Textboxenverzeichnis}
+  \lstlistoflistings
+
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+  \include{abkuerzungen}
+
+  \cleardoublepage
+
+%Kapitel
+  \pagenumbering{arabic}
+  \include{Kapitel/01_einleitung}
+  \include{Kapitel/02_grundlagen}
+  \include{Kapitel/03_konzeption}
+  \include{Kapitel/04_implementierung}
+  \include{Kapitel/05_evaluation}
+  \include{Kapitel/06_fazit_ausblick}
+
+%Anhang
+  \include{Kapitel/07_anhang}
+
+%Literaturverzeichnis
+  \cleardoublepage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{Literaturverzeichnis}
+  \bibliography{Diplomarbeit}
+  \bibliographystyle{geralpha} % iflchicago
+
+\end{document}

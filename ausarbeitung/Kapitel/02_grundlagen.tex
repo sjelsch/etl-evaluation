@@ -1,0 +1,580 @@
+\chapter{Grundlagen}
+\label{cha:Grundlagen}
+
+In diesem Kapitel werden die in der Abschlussarbeit verwendeten Begriffe und Notationen erläutert. Der erste Abschnitt beschreibt die wesentlichen Anforderungen für die Analyse statistischer Datensätze sowie die daraus entstandenen Konzepte und Prozesse. Im Vordergrund steht dabei die Definition des Begriffs \textit{Business Intelligence}, die grundlegenden Aufgaben der Speicherkomponente in Form eines \textit{Data Warehouses} und das Prinzip hinter dem Konzept \textit{OLAP}. Der zweite Abschnitt behandelt das Konzept \textit{Semantic Web} und bietet eine ausführliche Beschreibung von \textit{RDF}. Die Veröffentlichung statistischer Datensätze nach dem \textit{Linked-Data}-Prinzip und dem \textit{RDF Data Cube Vocabulary} schließen diesen Abschnitt ab. Im letzten Abschnitt wird eine Einführung in das Thema \textit{Big Data} und die grundlegenden Technologien aus dem Apache-Hadoop-Ökosystem behandelt.
+
+\section{Konzepte und Prozesse zur systematischen Analyse von statistischen Datensätzen}
+\label{sec:konzepte-und-prozesse}
+
+Damit Führungskräfte strategische Entscheidungen treffen können, benötigen sie einen genauen Überblick über ihr Unternehmen. Aus diesem Grund ist es notwendig, den Entscheidungsträgern alle relevanten Informationen und Daten für die Analysen zur Verfügung zu stellen. Die Begriffe und die damit verbundenen Konzepte und Prozesse sind Gegenstand der nächsten Abschnitte.
+
+\subsection{Der Begriff Business Intelligence}
+\label{sub:bi}
+
+Der Begriff \textit{Business Intelligence} (BI) hat sich in den letzten drei Dekaden sowohl in der Wissenschaft als auch in der Wirtschaft etabliert (vgl. \cite{gluchowski2006quo}). Eine genaue Abgrenzung des Begriffs erweist sich jedoch als schwierig. Bis zum heutigen Zeitpunkt besteht Uneinigkeit in der eindeutigen Definition. Dessen ungeachtet muss eine BI-Anwendung verständnisunterstützenden Charakter zur Entscheidungsfindung und besseren Einsicht des Unternehmens aufweisen (vgl. \cite[S.~30]{gluchowski2008management}). Für den weiteren Verlauf dieser Arbeit wird daher als Begriffsverständnis für BI eine Definition in Anlehnung an Strauch und Winter \cite{strauch2002vorgehensmodell} gewählt:
+
+\begin{quote}
+\glqq Der Begriff 'Business Intelligence' [...] umschreibt den IT-gestützten Zugriff auf Informationen sowie die IT-gestützte Analyse und Aufbereitung von Informationen mit dem Ziel der Unterstützung betrieblicher Entscheidungen.\grqq
+\end{quote}
+
+Nach dieser Definition wird Business Intelligence im weiten Begriffsverständnis (vgl. \cite{krahl1998data}; \cite{intelligence1999ibm}; \cite{hannig2002deutsche}) in drei Schichten unterteilt. Dieses Schichtenmodell ist Gegenstand des nächsten Abschnitts.
+
+\subsubsection{Das Business-Intelligence-Schichtenmodell}
+
+Im Folgenden werden die drei Schichten des BI-Schichtenmodells und ihre jeweiligen Aufgaben beschrieben. Zum besseren Verständnis dient die Abbildung \ref{fig:bi-schichtenmodell}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\textwidth]{bi-schichtenmodell}
+  \caption{BI-Schichtenmodell in Anlehnung an \cite[S.109]{gluchowski2008management} und \cite[S.~19]{kimball2013data}.}
+  \label{fig:bi-schichtenmodell}
+\end{figure}
+
+\begin{description}
+  \item[Schicht 1: Datenbereitstellung] \hfill \\
+  Im Rahmen der Datenbereitstellung werden alle entscheidungsrelevanten Daten aus mehreren und teilweise sehr unterschiedlichen operativen Systemen eines Unternehmens geladen, gesäubert, vereinheitlicht und in ein zentrales, entscheidungsorientiert aufgebautes Data Warehouse (s. Abschnitt \ref{sub:dw}) systematisch zusammengeführt. Auf diese Weise wird zu Informations- und Analysezwecken eine Überführung von vielfältigen und heterogenen Datenquellen in einen gemeinsamen und konsistenten Datenbestand ermöglicht (vgl. \cite[S.~109-111]{gluchowski2008management}).
+  \item[Schicht 2: Analyse] \hfill \\
+  Der Datenbestand eines Data Warehouses stellt das Fundament für die Analysen dar. Die aufbereiteten Daten werden in dieser Schicht nach verschiedenen Kriterien und Methoden ausgewertet. Je nach Anwendungsfall unterscheiden sich die benötigten Analysefunktionen erheblich voneinander. Besonders häufig wird eine navigationsorientierte Analysemöglichkeit bereitgestellt, die sich durch die Verdichtung der zu untersuchenden Kennzahlen eines Unternehmens charakterisiert (vgl. \cite[S.~111-114]{gluchowski2008management}).
+  \item[Schicht 3: Präsentation] \hfill \\
+  Schließlich beinhaltet die letzte Schicht Funktionen für den Zugriff auf das Datenmaterial. Im Vergleich zur Analyseschicht liegt hier der Schwerpunkt in der Präsentation der relevanten Inhalte. Die Darstellungsformen richten sich nach den Bedürfnissen der Analysten und reichen von der Ausgabe durch eine mehrdimensionalen Tabelle bis hin zu grafischen Abbildungen in Form von Balken-, Säulen-, Linien- und Flächendiagrammen (vgl. \cite[S.~114-116]{gluchowski2008management}).
+\end{description}
+
+Grundsätzlich ist in vielen konkreten Anwendungsfällen eine exakte Trennung zwischen den Schichten nicht möglich. In der Praxis erfolgt der Einsatz von Business Intelligence stets unternehmensspezifisch und orientiert sich dabei an den betriebswirtschaftlichen Anforderungen des Unternehmens (vgl. \cite[S.~1-5]{kimball2013data}). Demnach kann der Umfang einzelner Schichten mehr oder weniger stark ausgeprägt sein (vgl. \cite[S.~108]{gluchowski2006quo}). Dessen ungeachtet hat sich die BI-Schichtenarchitektur für theoretische Grundlagen als sinnvoll erwiesen.
+
+Die in der Datenbereitstellungsschicht benötigte Speicherkomponente und die damit verbundenen Anforderungen werden im folgenden Abschnitt genauer erläutert.
+
+\subsection{Data Warehouse als Speicherkomponente}
+\label{sub:dw}
+
+Im Allgemeinen wird ein Data Warehouse als eine Sammlung von Daten aus unterschiedlichen, heterogenen operativen Systemen (wie z.\,B. Vertrieb, Produktion) angesehen. Zudem bildet ein Data Warehouse das Fundament der unternehmensspezifischen Entscheidungsunterstützung für Führungskräfte und Analysten (vgl. \cite[S.~117-119]{gluchowski2008management}). Sinn und Zweck liegt in der Möglichkeit, Entscheidern eines Unternehmens eine globale Sicht auf heterogen verteilte Datenbestände und somit einen einheitlichen und zentralen Zugriff auf die relevanten Daten zu bieten. Unabhängig davon, an welcher Stelle die Daten ursprünglich gespeichert wurden oder welche Struktur sie aufwiesen.
+
+Im Vergleich zu applikations- und prozessorientierten operativen Systemen wird ein Data Warehouse in der Regel durch folgende Merkmale charakterisiert (vgl. \cite[S.119-121]{gluchowski2008management}):
+
+\begin{description}
+  \item[Merkmal 1: Themenorientierung] \hfill \\
+  Im Gegensatz zu operativen Systemen liegt der Fokus bei einem Data Warehouse auf das inhaltliche Thema. Operative Daten, die nur bei der Abwicklung eines Prozesses benötigt werden, werden im Allgemeinen nicht in einem Data Warehouse gespeichert. Daher ist vor der Speicherung eine Selektion der relevanten Daten durchzuführen.
+  \item[Merkmal 2: Vereinheitlichung] \hfill \\
+  Die unterschiedlichen Datenquellen der operativen Systeme führen in der Regel zu einer großen Heterogenität der Daten. Ziel der Vereinheitlichung ist ein konsistenter Datenbestand, bei dem Unstimmigkeiten, fehlende Werte oder unterschiedliche Bezeichnungen für gleiche Objekte korrigiert werden (s. Abschnitt \ref{sub:etl}).
+  \item[Merkmal 3: Zeitorientierung] \hfill \\
+  Im Vergleich zu operativen Anwendungen, bei denen der Zugriff auf aktuelle Daten im Moment des Zugriffs erfolgen muss, wird bei einem Data Warehouse für die Auswertung der Informationen lediglich eine zeitpunktbezogene Korrektheit benötigt (vgl. \cite[S.~120]{gluchowski2008management}).
+  \item[Merkmal 4: Beständigkeit] \hfill \\
+  Im Allgemeinen werden für die Analysen Daten benötigt, die einen zeitlichen Verlauf beschreiben. Daher werden diese Daten über einen langen Zeitraum hinweg in einem Data Warehouse gespeichert und nur in Ausnahmefällen aktualisiert (vgl. \cite[S.~13]{mucksch2000data}).
+\end{description}
+
+Zusammenfassend ist zu sagen, dass die Ziele einer Data Warehouse-Lösung darin bestehen, Daten über lange Zeiträume und mit einem konkreten Zeitbezug zu sammeln, aufzubereiten und bedarfsgerecht für die Analysen zur Verfügung zu stellen (vgl. \cite[S.~29-39]{inmon2005building}). Als wesentlicher Bestandteil gelten die Bausteine, die für die Überführung der Daten aus den Datenquellen in das zentrale Data Warehouse zuständig sind. Der nächste Abschnitt soll diese Bausteine und den damit einhergehenden Prozess genauer erläutern.
+
+\subsection{Der Extract-, Transform- und Load-Prozess}
+\label{sub:etl}
+
+Die Befüllung der Data Warehouse-Speicherkomponenten ist von zentraler Bedeutung (vgl. \cite[S.~133-144]{gluchowski2008management}). Ziel ist, Daten aus heterogenen operativen Systemen für den betrieblichen Anwender nutzbar in eine Zieldatenbank abzulegen. Hierzu ist die Extraktion und eine Transformation der Quelldaten in die benötigte Datenstruktur erforderlich. Dieser als Extract, Transform und Load (ETL) bezeichneter Prozess wird in Abbildung \ref{fig:etl} veranschaulicht. Die einzelnen Phasen werden im Folgenden genauer erläutert.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{etl}
+  \caption{ETL-Prozess zur Befüllung eines Data Warehouses in Anlehnung an \cite[S.~134]{gluchowski2008management}.}
+  \label{fig:etl}
+\end{figure}
+
+\begin{description}
+  \item[Phase 1: Extract] \hfill \\
+  Die Extraktion ist der erste Schritt des ETL-Prozesses. In dieser Phase werden die Daten aus den verschiedenen Quellen geladen und für die darauffolgenden Transformationen bereitgestellt. In der Regel werden durch wohldefinierte Filtervorschriften die Quelldaten auf einen im Vorfeld festgelegten, relevanten Umfang reduziert.
+  \item[Phase 2: Transform] \hfill \\
+  Nachdem die relevanten Daten aus den operativen Systemem extrahiert wurden, erfolgt im nächsten Schritt eine Transformation der Quelldaten. Diese Phase besteht im Allgemeinen aus mehreren Transformationsschritten, um eine Verbesserung der Datenqualität zu erhalten. Bei der Säuberung werden die Daten auf Fehler kontrolliert, aufkommende Konflikte gelöst und ein Verhalten bei fehlenden oder unerlaubten Werten definiert (vgl. \cite[S.~19-21]{kimball2013data}). Zusätzlich findet in vielen Fällen eine Duplikateliminierung statt.
+  \item[Phase 3: Load] \hfill \\
+  Die Zielsetzung der letzten Phase ist das Laden der transformierten Daten aus dem Arbeitsbereich in das Data Warehouse. Besondere Bedeutung erlangt hierbei die Effizienz des Schreibvorgangs. Die Zieldatenbank sollte so wenig wie möglich blockiert werden. %Darüber hinaus wird in diesem Schritt häufig eine Versionshistorie der einzelnen Daten angefertigt.
+\end{description}
+
+Nur nach erfolgreichem Abschluss dieser Phasen liegen die Daten für die Analyse in der benötigten Struktur und Datenqualität im Data Warehouse vor. Die Güte des ETL-Prozesses ist entscheidend für die gewünschte Qualität der verfügbaren und vorliegenden Daten. Da auf diese Daten fast ausschließlich lesend zugegriffen wird, kann eine auf Abfragen optimierte Modellierung erfolgen (vgl. \cite{kempa2011multidimensional}). Dies ist Gegenstand des nächsten Abschnitts.
+
+\subsection{On-Line Analytical Processing}
+\label{sub:olap}
+
+Das von Codd et al. \cite{codd1993providing} geprägte Konzept OLAP (\textbf{O}n-\textbf{L}ine \textbf{A}nalytical \textbf{P}rocessing) bietet für entscheidungs- und führungsrelevante Fragestellungen eine multidimensionale Betrachtung des Datenbestands. Auf diese Weise soll für Fach- und Führungskräfte sowie Analysten ein besonders gut zu repräsentierendes Geschäftsverständnis des Unternehmens erreicht werden (vgl. \cite[S.~143]{gluchowski2008management}).
+
+In dieser Arbeit werden die fünf charakteristischen OLAP-Merkmale von Pendse und Creeth \cite{pendse1995olap} mit dem Akronym FASMI (\textbf{F}ast \textbf{A}nalysis of \textbf{S}hared \textbf{M}ultidimensional \textbf{I}nformation) einer genaueren Betrachtung unterzogen. Das Ziel ist eine klare Definition der OLAP-Eigenschaften. Im Einzelnen bedeutet FASMI:
+
+\begin{description}
+  \item[Geschwindigkeit (Fast)] \hfill \\
+  Das Ergebnis der Analyse soll möglichst schnell zur Verfügung stehen. Um die interaktive Eigenschaft nicht zu verlieren, sind Abfragen im Sekundenbereich vom OLAP-System zu beantworten, auch bei großen Datenmengen.
+  \item[Analyse (Analysis)] \hfill \\
+  Der Analyseprozess soll die Anforderungen erfüllen, die im jeweiligen Fall benötigt werden. Nach Pendse und Creeth darf der Benutzer nicht mit Programmiertätigkeiten belastet werden.
+  \item[Gemeinsamer Zugriff (Shared)] \hfill \\
+  Der Zugriff auf den Datenbestand soll für mehrere Anwender gleichzeitig möglich sein. Für lesende oder schreibende Zugriffsarten sind demzufolge Sicherheitsmechanismen für einen verlässlichen und gültigen Benutzerzugriff notwendig, obwohl letztere Zugriffsart in der Regel nicht von allen Systemen gewährleistet wird.
+  \item[Mehrdimensionalität (Multidimensional)] \hfill \\
+  Ein weiteres und zentrales Kriterium stellt die konzeptionelle Mehrdimensionalität dar, unabhängig von der eingesetzten Datenbanktechnologie. Ferner sollen Hierarchien in Dimensionen in vollem Umfang unterstützt werden (s. Abschnitt \ref{subsub:olap-datenmodell}).
+  \item[Information] \hfill \\
+  Unabhängig der Menge oder Herkunft sollen alle relevanten Daten verarbeitet und aufgenommen werden können.
+\end{description}
+
+Ist bei der Anfrage nicht nur ein einzelner Zugriff auf einen Wert oder einen kleinen Datenbereich, sondern ein dynamischer, flexibler und interaktiver Zugriff auf einen großen Datenbereich erforderlich, so gehört sie der Kategorie der OLAP-Anfragen an. OLAP-Anfragen sind häufig in Data Warehouses zu finden, da hier sehr komplexe Fragestellungen wie \glqq Wie hat sich 2015 der Umsatz der Firma am Standort 'Berlin' in der Produktkategorie 'Schuhe' im Vergleich zum Jahr 2014 verändert?\grqq{} beantwortet werden sollen. Durch diese Art von Anfragen wird das Datenmodell an die Analyseanforderungen angepasst (vgl. \cite{kempa2011multidimensional}). Aus dieser Anpassung resultiert eine multidimensionale Sichtweise für komplexe Analysen der Daten mit Präsentationsunterstützung (vgl. \cite[S.~106f.]{bauer2013data}).
+
+\subsubsection{OLAP-Datenmodell}
+\label{subsub:olap-datenmodell}
+
+Die Modellierung der Datenstruktur erweist sich als zentrale Aufgabe eines Business-Intelligence-Projektes. Auf der konzeptionellen Ebene wird OLAP im Allgemeinen als multidimensionales Datenmodell (MDM) dargestellt (vgl. \cite[S.~7-8]{kimball2013data}; \cite{kempa2011multidimensional}; \cite{kampgen2011transforming}). Obwohl kein einheitlicher Standard für die Darstellung eines MDMs existiert, haben alle die Gemeinsamkeit, Daten in einem n-dimensionalen Würfel abzubilden, dem sogenannten \textit{OLAP Cube} (auch als OLAP-Würfel, Hypercube oder Data-Cube bezeichnet). Dabei werden die zu analysierenden Daten in Fakten (engl. \textit{Facts}) und Dimensionen (engl. \textit{Dimensions}) unterteilt.
+
+Fakten sind einzelne Datenpunkte im Cube. Sie beinhalten die zu analysierenden Kennzahlen (engl. \textit{Measures}). Measures sind ausschließlich numerischer Art und beschreiben z.\,B. den Umsatz, die Kosten und den Profit eines Unternehmens. Diese Kennzahlen müssen im Vorfeld der Konzeption als solche deklariert werden. Der Zugriff auf ein Fakt wird über die Instanzen der Attribute, die \textit{Members} genannt werden, ermöglicht.
+
+Die Dimensionen hingegen identifizieren die Achsen des OLAP Cubes und ermöglichen somit den Zugriff auf die Measures. Die Strukturierung nach Dimensionen ist das grundlegende Prinzip von OLAP. Dimensionen ermöglichen verschiedene Sichtweisen auf die Daten und unterstützen die Vorgehensweise der multidimensionalen Analyse. Zum besseren Verständnis des multidimensionalen Modells zeigt Abbildung \ref{fig:mdm} eine häufig gewählte Darstellungsmöglichkeit.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.65\textwidth]{olap}
+  \caption{Beispiel eines multidimensionalen Modells mit drei Dimensionen in Anlehnung an \cite{kampgen2011transforming}.}
+  \label{fig:mdm}
+\end{figure}
+
+In der Regel besitzt eine Dimension mehrere Attribute (engl. \textit{Attribute}), die zueinander in Beziehung stehen. Im OLAP-Kontext wird solch eine Beziehung als Hierarchie (engl. \textit{Hierarchy}) bezeichnet, die über mehrere Ebenen (engl. \textit{Levels}) eine Dimensionen charakterisieren. Eine hierarchische Anordnung findet sich in vielen Daten wieder, z.\,B. in der häufig verwendeten Dimension \glqq Zeit\grqq{}. Eine Dimension kann zudem mehrere Hierarchien besitzen, z.\,B. besteht ein Jahr aus 12 Monaten aber auch gleichzeitig aus 52 Wochen.
+
+Neben der hierarchischen Anordnung der Daten besteht eine weitere Eigenschaft von OLAP-Systemen darin, dem Analysten die Möglichkeit zu bieten, sich entlang einer solchen Hierarchie zu navigieren. Durch die Anordnung der Daten ermöglicht ein OLAP-System eine einfache, flexible und schnelle Bereitstellung entscheidungsrelevanter Informationen aus verschiedenen Perspektiven. Hierzu sind Operationen notwendig, die im folgenden Abschnitt erläutert werden.
+
+\subsubsection{OLAP-Funktionen}
+\label{subsub:olap-functions}
+Zentrales Ziel eines OLAP-Systems ist eine anschauliche und verständliche Visualisierung des OLAP Cubes für den Benutzer. Mithilfe von verschiedenen OLAP-Funktionen sollen Analysten in der Lage sein, durch den OLAP Cube zu navigieren und Kennzahlen zu verdichten oder zu filtern. Zusätzlich dient Abbildung \ref{fig:olap-functions} der Veranschaulichung der vorgestellten Operationen.
+
+\begin{description}
+  \item[Drill-Down] \hfill \\
+  Bei der Drill-Down-Operation findet eine Navigation zu detailliertere Daten statt. Anschaulich kann eine Hierarchie als Graph angesehen werden. Durch die Drill-Down-Funktion wandert der Benutzer entlang eines definierten Pfades von einem höhergelegenden Hierarchieobjekt zu einem tiefergelegenden Hierarchieobjekt. Der Detaillierungsgrad der Daten wird dadurch verfeinert.
+  \item[Roll-Up] \hfill \\
+  Die Roll-Up-Operation ist die Inverse der Drill-Down-Operation. Ausgehend von einem Hierarchieobjekt wird entlang eines Pfades auf ein höhergelegenes Hierarchieobjekt zugegriffen. Der Detaillierungsgrad der Daten wird dadurch verringert.
+  \item[Slice] \hfill \\
+  Bei dieser Operation wird bildlich gesehen eine \glqq Scheibe\grqq{} aus dem Cube extrahiert (s. oranger Bereich in Abbildung \ref{fig:olap-functions}). Dies entspricht einer Einschränkung des OLAP Cubes in einer bestimmten Dimension.
+  \item[Dice] \hfill \\
+  Diese Operation entspricht dem Ausschneiden eines Teil-Cubes durch Einschränkungen auf mehreren Dimensionen.
+  % \item[Rotate] \hfill \\
+  % Die auch als Pivoting bezeichnete Operation vertauscht die Reihenfolge der dargestellten Dimensionen und ermöglicht dadurch eine Betrachtung der Daten aus verschiedenen Perspektiven. Bildlich gesehen, wird der Cube gedreht bzw. rotiert.
+\end{description}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\textwidth]{olap-functions}
+  \caption{OLAP-Cube-Perspektiven mit den vorgestellten OLAP-Operationen Drill Down, Roll Up, Slice und Dice.}
+  \label{fig:olap-functions}
+\end{figure}
+
+Für die Realisierung des Datenmodells existieren unterschiedliche Ansätze, die in den folgenden Abschnitten genauer betrachtet werden.
+
+\subsubsection{Relational OLAP (ROLAP)}
+\label{subsub:rolap}
+
+Greift ein OLAP-System bei der Analyse auf die Daten einer relationalen Datenbank zu, wird dies als relationales OLAP (ROLAP) bezeichnet. Dabei bilden die in Bezug stehenden Relationen die Dimensionen in einem denormalisiertes Sternschema (engl. \textit{Star Schema}) ab, dessen Layout sich erkennbar von einem operativen System unterscheidet (s. Abbildung \ref{fig:starschema}).
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{starschema}
+  \caption{Unterschied zwischen der Anordnung der Relationen eines operativen Systems (links) und der Anordnung der Relationen im Sternschema (rechts) in Anlehnung an \cite[S.~112]{totok2000modellierung}.}
+  \label{fig:starschema}
+\end{figure}
+
+\paragraph{Das Sternschema}
+\label{par:starschema}
+
+Die Bezeichnung Star Schema leitet sich aus der sternförmigen Anordnung der Relationen ab. Wie rechts in Abbildung \ref{fig:starschema} dargestellt, besteht das Datenmodell aus einer zentralen Relation, die sogenannte Faktentabelle, und aus mehreren, sternförmig angeordneten Relationen, die als Dimensionstabellen bezeichnet werden.
+
+Die Faktentabelle repräsentiert alle Beziehungen und Measures der aus Geschäftsprozessen entstehenden Ereignissen eines Unternehmens. In der Regel umfasst die Faktentabelle eine große Anzahl an Einträgen, jedoch eine relativ geringe Anzahl an Spalten.
+
+Die beschreibenden Informationen der Fakten werden in den zugehörigen Dimensionstabellen gespeichert. Diese können beispielsweise Informationen zum Kunden, Produkt oder Ort beinhalten. Jede Dimensionstabelle steht in einer 1:n-Beziehung zur Faktentabelle. Die Dimensionstabellen haben im Allgemeinen einen einzigen Primärschlüssel, der jeden Tupel eindeutig identifiziert. Im Gegensatz dazu besitzt die Faktentabelle den Primärschlüssel jeder zugehörigen Dimensionstabelle als Fremdschlüssel. In der Regel stellt die Menge der Fremdschlüssel den Primärschlüssel der Faktentabelle dar. Dies impliziert, dass jede Kombination von Dimensionen nur einmal vorkommen darf. In der Praxis wird dieser Fall durch eine Zeit-Dimension sichergestellt.
+
+Das Sternschema hat nicht die Normalisierung als Ziel. Stattdessen wird durch die Verletzung der dritten Normalform die Redundanz und damit einhergehend der erhöhte Speicherbedarf für eine bessere Verständlichkeit des Datenmodells in Kauf genommen. Ein weiterer Vorteil dieser Missachtung ist die reduzierte Anzahl der benötigten Join-Anfragen für die gewünschte Analyse. Dieser geringere Aufwand führt zu einer schnelleren Ausführungsgeschwindigkeit der Abfragen (vgl. \cite[S.~111f.]{totok2000modellierung}).
+
+In der Praxis wird ROLAP aufgrund der weiten Verbreitung von relationalen Datenbanken und der Abfragesprache SQL sehr häufig eingesetzt. Als weiteres Datenmodell wird im nächsten Abschnitt das sogenannte Multidimensional OLAP vorgestellt.
+
+\subsubsection{Multidimensional OLAP - MOLAP}
+\label{subsub:molap}
+
+Im Vergleich zur Datenspeicherung in einer relationalen Datenbank, die die Daten als Datensätze speichert, werden beim multidimensionalen OLAP (MOLAP) die Daten direkt in eine dafür vorgesehene multidimensionale Datenbank als Datenpunkte gespeichert. Dabei sind Vorberechnungen der Aggregationen im OLAP Cube erforderlich. Dieser Aufwand ermöglicht während der Analyse eine kürzere Ausführungsdauer, führt jedoch gleichzeitig zu einem größeren Speicherplatzverbrauch und einem längeren ETL-Prozess, da die Aggregationen für jede Kombination der Dimensionen vorzuberechnen sind.
+
+Eine einzelne Teilmenge der Dimensionen wird als \textit{Cuboid} bezeichnet. Die Anzahl an Cuboids steigt exponentiell zur Anzahl der Dimensionen an. Bei einem OLAP Cube mit vier Dimensionen werden bereits $2^4$ Cuboids benötigt (s. Abbildung \ref{fig:cuboids} links).% Die linke Abbildung in \ref{fig:cuboids} veranschaulicht dieses Problem.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.90\textwidth]{cuboids}
+  \caption{Aufbau eines Aggregationsgitters für die Berechnung der Cuboids mit vier Dimensionen. Links Full Cube, rechts ein Beispiel eines Partial Cubes.}
+  \label{fig:cuboids}
+\end{figure}
+
+Der größtmögliche Cuboid, bei dem die Aggregation nach allen Dimensionen stattfindet (in der Abbildung \ref{fig:cuboids} durch eine 1 symbolisiert), wird als \textit{N-Cuboid} bezeichnet. Ausgehend von diesem N-Cuboid werden durch das Entfernen von jeweils einer Dimension die \textit{N-1-Cuboids} berechnet. Dieser Prozess wird solange durchgeführt, bis keine Dimensionen zur Berechnung der Measures vorhanden sind. Dies entspricht dem kleinstmöglichen Cuboid und wird als \textit{0-Cuboid} bezeichnet.
+
+In der Regel werden jedoch mehr als vier Dimensionen für eine interaktive Analyse verwendet. Aus diesem Grund hat sich in der Praxis der \textit{Partial Cube} etabliert (s. Abbildung \ref{fig:cuboids} rechts). Bei einem Partial Cube werden nur die Cuboids vorberechnet, die bei der Analyse benötigt werden. Dies führt zu einer Reduzierung der Vorberechnungen und des Speicherplatzverbrauchs. Eine ungünstige Wahl des Partial Cubes kann jedoch dazu führen, dass Anfragen nicht beantwortet werden können, da nicht alle Cuboids vorberechnet wurden. Aus diesem Grund ist der Partial Cube in den Fällen uneingeschränkt sinnvoll, in denen das Analysebedürfnis der Benutzer genau bekannt ist.
+
+\subsection{Multidimensionale Abfragesprache: MDX}
+\label{sub:mdx}
+
+Analog zum relationalen Modell mit der Abfragesprache SQL ist für das multidimensionale Datenmodell die Abfragesprache MDX\footnote{ MDX wurde ursprünglich von Microsoft entwickelt und im Jahr 1998 veröffentlicht.} (engl. für \textbf{M}ulti\textbf{D}imensional E\textbf{X}pression, vgl. \cite{spofford2005mdx}) entstanden. MDX stellt eine auf das multidimensionale Datenmodell zugeschnittene Menge an Operationen bereit, wie z.\,B. Drill-Down, Roll-Up, Slicing und Dicing (vgl. Abschnitt \ref{subsub:olap-functions}). Inzwischen hat sich diese Abfragesprache zu einem Standard\footnote{ s. Spezifikation von MDX unter \url{https://msdn.microsoft.com/en-us/library/ms145506.aspx}.} entwickelt und findet in unterschiedlichen Produkten Anwendung (vgl. \cite{kempa2011multidimensional}).
+
+Eine SQL-Abfrage stellt das Ergebnis in zweidimensionaler Form (Spalten und Zeilen) bereit. Im Gegensatz dazu liefert eine MDX-Abfrage als Ergebnis wiederum einen multidimensionalen Cube zurück.
+
+Ähnlich wie SQL ist eine MDX-Anfrage in die drei Bereiche \glqq \textit{SELECT}\grqq{}, \glqq \textit{FROM}\grqq{} und \glqq \textit{WHERE}\grqq{} unterteilt. Im SELECT-Bereich werden die Achsen des Cubes deklariert. Für jedes Measure im Cube wird durch den Schnitt der Achsen in Kombination mit den Dimensionsangaben in der WHERE-Klausel ein sogenannter Kontexttupel gebildet (vgl. \cite{kempa2011multidimensional}). Für MDX gilt die Besonderheit, dass die Measures als eigene Dimension mit dem Namen \textit{MEASURES} behandelt werden. Schließlich gibt die FROM-Klausel an, aus welchem Cube die Daten für die Anfrage ausgelesen werden sollen.
+
+MDX stellt eine Vielzahl von OLAP-Funktionen für die Navigation durch Hierarchien zur Verfügung. Beispielsweise ist für eine Rückgabe, die alle Monate eines Jahres auflistet, keine explizite Angaben der einzelnen Monate in der MDX-Abfrage notwendig. Diese Eigenschaft wird als erweiterte Selektierbarkeit bezeichnet. Listing \ref{list:mdx-query} zeigt ein Beispiel einer MDX-Abfrage.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=MDX,caption={Beispiel einer MDX-Anfrage. Berechne den Profit und Umsatz aus dem Jahr 2015 und 2014 auf Monatsebene für alle Lieferanten aus Deutschland.},label=list:mdx-query]
+SELECT
+  {[Measures].[Profit]}, {[Measures].[Revenue]} ON COLUMNS,
+  {[Dates].[Year].[2015].CHILDREN}, {[Dates].[Year].[2014].CHILDREN} ON ROWS
+FROM Sales
+WHERE
+  [Supplier].[Region].[Germany]
+\end{lstlisting}
+\end{minipage}
+
+Ein Beispiel-Ergebnis der MDX-Abfrage aus Listing \ref{list:mdx-query} ist in Tabelle dargestellt.
+
+\begin{table}
+\centering
+\begin{tabular}{ll|l|l}
+  \textbf{} & \textbf{} & \textbf{Profit} & \textbf{Revenue} \\ \hline \hline
+
+  \multicolumn{1}{c|}{2015} & January  & 2596 & 11553 \\ \cline{2-4}
+  \multicolumn{1}{c|}{}     & February & 3667 & 13009 \\ \cline{2-4}
+  \multicolumn{1}{c|}{}     & \dots & \dots & \dots \\ \hline
+
+  \multicolumn{1}{c|}{2014} & January  & 1877 & 9333 \\ \cline{2-4}
+  \multicolumn{1}{c|}{}     & February & 2269 & 10019 \\
+  \multicolumn{1}{c|}{}     & \dots & \dots & \dots \\
+\end{tabular}
+\caption{Ergebnis der MDX-Abfrage aus Listing \ref{list:mdx-query}.}
+\label{tab:mdx-result}
+\end{table}
+
+MDX ist eine mächtige Abfragesprache und wird daher bei komplexen OLAP-Operationen häufig eingesetzt. Neben dem Vorteil der erweiterten Selektierbarkeit besteht eine weitere Stärke von MDX darin, mit Roll-Up- und Drill-Down-Operationen durch Hierarchien entlang eines Pfades zu navigieren.
+
+MDX wird bei der Konzeption des ETL-Prozesses eine wichtige Rolle einnehmen. Jedoch kann im Rahmen dieser Abschlussarbeit nicht auf den vollen Funktionsumfang von MDX eingegangen werden. Daher findet der interessierte Leser in andere Quellen weitere Informationen zur multidimensionalen Abfragesprache MDX (vgl. \cite{spofford2005mdx}; \cite{kempa2011multidimensional}; \cite{whitehorn2007fast}).
+
+\section{Die Idee hinter dem Konzept Semantic Web}
+\label{sec:Semantic-Web}
+
+Die Idee hinter dem von Tim Berners-Lee geprägten Konzept Semantic Web besteht darin, das herkömmliche Web durch Standards zu erweitern. Im Vordergrund steht dabei die Verwertung der Informationen von Maschinen und der einfache Austausch zwischen diesen (vgl. \cite{berners2001semantic}). Zusätzlich sind grundlegende Anforderungen an diese Standards notwendig, die neben einer klaren Definition auch eine flexible Anwendung und mögliche Erweiterungen erlauben sollen.
+
+Eine geeignete Repräsentation der Informationen ist somit eines der wichtigen Ziele des Semantic Webs. Für den maschinellen Umgang mit diesen Daten sind folglich Methoden für die Kommunikation und den Austausch zwischen Rechnern zu finden und zu definieren (vgl. \cite[S.~12]{hitzler2007semantic}). Dieser Aufgabe hat sich das World Wide Web Consortium\footnote{ s. Webseite des World Wide Web Consortium unter \url{http://www.w3.org/Consortium/}.} (W3C) verschrieben. Der daraus entwickelte Standard Resource Description Framework ist Gegenstand der folgenden Abschnitte.
+
+\subsection{Resource Description Framework}
+\label{sub:RDF}
+
+Das Resource Description Framework (RDF) ist eine Modellierungssprache für die Beschreibung strukturierter Informationen über Ressourcen im Web und ein Standard des W3C (vgl. \cite{lassila1999resource}). Die erste offizielle Spezifikation wurde im Jahr 1999 veröffentlicht, wobei die Konzentration damals auf der Repräsentation von Metainformationen der Web-Ressourcen lag. Heute dient RDF, aufgrund verschiedener Überarbeitungen der Spezifikation, als Grundlage des Semantic Webs und wird häufig als Darstellungsformat gewählt. Zum Zeitpunkt der Abschlussarbeit wurde die aktuelle Version\footnote{ s. Spezifikation von RDF unter \url{http://www.w3.org/TR/2014/NOTE-rdf11-primer-20140624/}.} im Juni 2014 veröffentlicht.
+
+\subsection{RDF-Datenmodell}
+\label{sub:RDF-Datenmodell}
+
+Die auf elementaren Aussagen aufgebaute Modellierungssprache RDF beschreibt Verbindungen und Beziehungen zwischen Web-Ressourcen. Jede Aussage (engl. \textit{Statement}) wird in RDF in drei grundlegenden Einheiten unterteilt: \textit{Subjekt}, \textit{Prädikat} und \textit{Objekt}. Ein Zusammenschluss dieser drei Einheiten wird als \textit{Triple} bezeichnet. Das Subjekt und das Objekt repräsentieren hierbei Web-Ressourcen, während das Prädikat ein Merkmal und eine Beziehung zwischen dem Subjekt und dem Objekt beschreibt. Im Gegensatz zu einem Subjekt oder einem Prädikat kann ein Objekt entweder eine weitere Web-Ressource oder ein Datenwert (engl. \textit{Literal}) ohne weiterführende Beziehung sein.
+
+Die Menge der Triples in einem RDF-Dokument bildet einen gerichteten Graphen. Ein Graph besitzt eine Menge von Knoten (Subjekte oder Objekte), die durch gerichtete Kanten (Prädikate) verbunden werden. Sowohl Knoten als auch Kanten werden mit eindeutigen Bezeichnungen gekennzeichnet. Abbildung \ref{fig:rdf-simple-graph} zeigt ein einfaches Beispiel des Statements \glqq Alice kennt Bob\grqq{} durch einen gerichteten Graphen mit zwei Knoten und einer Kante.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,thin,
+    resource/.style={ellipse,fill=blue!10,draw=black!60,thick},
+    literal/.style={fill=white!30,draw}]
+    \node[resource] (1) at (0,0) {http://example.com/alice};
+    \node[resource] (2) at (8,0) {http://example.com/bob};
+
+    \path[every node/.style={}]
+      (1) edge [bend left] node {http://xmlns.com/foaf/0.1/knows} (2);
+  \end{tikzpicture}
+  \caption{Beispiel eines RDF-Graphs zur Beschreibung einer Beziehung zwischen den Web-Ressourcen Alice und Bob.}
+  \label{fig:rdf-simple-graph}
+\end{figure}
+
+Die dezentrale Verwaltung von Web-Ressourcen führt zu zwei grundlegenden Problemen. Einerseits kann es vorkommen, dass gleiche Web-Ressourcen unterschiedliche Bezeichner erhalten, andererseits kann es vorkommen, dass für unterschiedliche Web-Ressourcen der gleiche Bezeichner verwendet wird. Um dem zweiten Problem entgegenzuwirken, werden im Allgemeinen zur eindeutigen Identifizierung von Web-Ressourcen sogenannte \textit{Uniform Resource Identifiers} (URI, engl. für \glqq einheitlicher Bezeichner für Ressourcen\grqq) als Indikatoren eingesetzt. Eine URI ist eine Zeichenfolge, die abstrakte oder auch physikalische Ressourcen identifiziert (vgl. \cite{berners2004uniform}).
+
+Wie in Abbildung \ref{fig:rdf-simple-graph} zu sehen ist, werden sowohl Knoten als auch Kanten eines RDF-Graphs mit URIs beschriftet. Bei Literalen sowie sogenannten \textit{Blank Nodes} ist zu berücksichtigen, dass diese Regel nicht angewendet wird (vgl. \cite[S.~56-59]{hitzler2007semantic}). Literale sind reservierte Bezeichner für RDF-Ressourcen eines bestimmten Datentyps. Im Allgemeinen werden diese Werte durch eine Zeichenkette beschrieben. Der optionale Datentyp gibt dabei an, wie der Datenwert zu interpretieren ist. So beschreiben die Zeichenfolgen \glqq 012{\grqq} und \glqq 12{\grqq} dieselbe natürliche Zahl, aber unterschiedliche Zeichenketten. Bei fehlender Angabe eines Datentyps wird das Literal als Zeichenkette interpretiert.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,thin,
+    resource/.style={ellipse,fill=blue!10,draw=black!60,thick},
+    literal/.style={fill=white!30,draw}]
+    \node[resource] (1) at (0,2) {http://example.com/alice};
+    \node[resource] (2) at (7,2) {http://example.com/bob};
+    \node[literal] (3) at (0,0) {\glqq 42{\grqq}\^{}\^{}<http://www.w3.org/2001/XMLSchema\#int>};
+    \node[literal] (4) at (7,0) {Karlsruhe};
+
+    \path[every node/.style={}]
+      (1) edge [bend left] node [] {http://xmlns.com/foaf/0.1/knows} (2)
+          edge []          node [left] {http://example.com/age} (3)
+      (2) edge []          node [left] {http://example.com/city} (4);
+  \end{tikzpicture}
+  \caption{Beispiel eines RDF-Graphs mit Literalen und optionalem Datentyp.}
+  \label{fig:rdf-literal-graph}
+\end{figure}
+
+Abbildung \ref{fig:rdf-literal-graph} zeigt ein einfaches Beispiel eines RDF-Graphs mit Literalen. Nach gängiger Konvention werden Ressourcen eines RDF-Graphs durch Ellipsen und Literale durch Rechtecke dargestellt.
+
+\subsection{RDF-Serialisierung}
+\label{sub:rdf-syntax}
+
+Wie im vorherigen Abschnitt erläutert, handelt es sich bei RDF um ein Datenmodell. Zur Beschreibung eines RDF-Graphs können unterschiedliche Serialisierungen verwendet werden. Die im Allgemeinen verwendeten Notationen werden in diesem Abschnitt kurz erläutert.
+
+\subsubsection{RDF / XML}
+
+Die Auszeichnungssprache \textit{XML} (E\textbf{x}tensible \textbf{M}arkup \textbf{L}anguage) wird häufig für einen plattform- und implementierungsunabhängigen Austausch von Daten und Informationen zwischen verschiedenen Rechnern mit unterschiedlichen Betriebssystemen verwendet (vgl. \cite{bray1998extensible}). Listing \ref{list:rdf-xml} zeigt das Beispiel aus Abbildung \ref{fig:rdf-literal-graph} in der RDF/XML-Notation.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=RDF,caption={Beispiel eines RDF-Dokuments.},label=list:rdf-xml]
+<?xml version="1.0" encoding="utf-8" ?>
+<rdf:RDF xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:ex="http://example.com/"
+           xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://example.com/alice">
+    <foaf:knows>
+      <rdf:Description rdf:about="http://example.com/bob">
+        <ex:city>Karlsruhe</ex:city>
+      </rdf:Description>
+    </foaf:knows>
+    <ex:age rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">
+      42
+    </ex:age>
+  </rdf:Description>
+</rdf:RDF>
+\end{lstlisting}
+\end{minipage}
+
+\subsubsection{Turtle}
+
+RDF/XML wurde lange Zeit als Standard-Format zur Beschreibung von RDF-Daten angesehen. Aufgrund der Tatsache, dass XML auf einem Baum- und RDF auf einem Graphen-Modell basiert, wurden im Laufe der Zeit weitere Serialisierungen entwickelt. Eine davon ist die häufig verwendete \textit{Turtle}-Notation\footnote{ s. Spezifikation von Turtle unter \url{http://www.w3.org/TeamSubmission/turtle/.}}. Listings \ref{list:rdf-turtle} zeigt das oben dargestellte Beispiel aus Listing \ref{list:rdf-xml} in der Turtle-Notation. URIs werden dabei in spitzen Klammern dargestellt. Jede Aussage wird durch einen Punkt abgeschlossen. Um nicht bei jedem Triple das Subjekt angeben zu müssen, können durch Semikola getrennt weitere Prädikate und Objekte angegeben werden. Zusätzlich gibt es die Möglichkeit, URIs durch die \textit{@prefix}-Syntax einen kürzeren Namen zu geben und diesen im Dokument anstelle der URI wiederzuverwenden.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=Turtle,caption={Turtle-Notation des Beispiels aus Listing \ref{list:rdf-xml}.},label=list:rdf-turtle]
+@prefix ex: <http://example.com/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+ex:alice
+  foaf:knows ex:bob ;
+  ex:age "42"^^<http://www.w3.org/2001/XMLSchema#integer> .
+ex:bob ex:city "Karlsruhe" .
+\end{lstlisting}
+\end{minipage}
+
+Die kürzere und für den Anwender besser lesbare Turtle-Notation wird im Rahmen dieser Abschlussarbeit in allen RDF-Listings verwendet. Aus Gründen der Übersichtlichkeit werden die verwendeten Präfixe in allen späteren Listings nicht explizit angegeben, dafür aber im Anhang \ref{sec:rdf-prefixe} alphabetisch sortiert aufgelistet.
+
+\subsubsection{N-Triples}
+\label{subsub:ntriples}
+
+In diesem Abschnitt wird eine weitere Notation erläutert, die in der Konzeption und Implementierung des später vorgestellten ETL-Prozesses benötigt wird. \textit{N-Triples}\footnote{ s. Spezifikation von N-Triples unter \url{http://www.w3.org/TR/n-triples/}.} ist eine zeilenbasierte Darstellung eines RDF-Graphs. Jede Zeile repräsentiert genau ein Triple der Form \glqq <SubjectURI> <PredicateURI> <ObjektURI> .\grqq{}. Der Punkt in der Zeile definiert das Ende der jeweiligen Aussage. Das Beispiel aus Listing \ref{list:rdf-xml} wird in der N-Triples-Notation im Listing \ref{list:rdf-ntriples} dargestellt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=Turtle,caption={N-Triples-Notation des Beispiels aus Listing \ref{list:rdf-xml}.},label=list:rdf-ntriples]
+<http://example.com/alice> <http://example.com/age> "42"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.com/alice> <http://xmlns.com/foaf/0.1/knows> <http://example.com/bob> .
+<http://example.com/bob> <http://example.com/city> "Karlsruhe" .
+\end{lstlisting}
+\end{minipage}
+
+Wie in Listing \ref{list:rdf-ntriples} zu erkennen ist, kann der optionale Datentyp eines Literals nach der Zeichenfolge \glqq \textasciicircum\textasciicircum\grqq{} angegeben werden. Auch hier gilt: Ist der Datentyp nicht definiert, wird der Wert des Literals als Zeichenkette interpretiert.
+
+Der Vorteil dieser Notation besteht in der einfachen und zeilenbasierten Darstellung der Triples. Jedes Triple wird in einer einzelnen Zeile beschrieben. Wie im Verlauf der Abschlussarbeit zu sehen sein wird, wird diese Notation bei der Umsetzung des ETL-Prozesses eine entscheidende Rolle spielen. Ein Nachteil dieser Serialisierung besteht jedoch in dem benötigten Speicherplatz. Da keine Präfixe oder andere Möglichkeiten einer kürzeren Darstellungsform bestehen, sind in der Regel RDF-Dokumente in der N-Triples-Notation im Vergleich zur Turtle-Notation größer.
+
+\subsection{RDF-Schema}
+\label{sub:RDF-Schema}
+
+Allein der Einsatz von URIs in RDF erlaubt noch keine semantisch eindeutige Interpretation aller Informationen (vgl. \cite[S.~47-50]{hitzler2007semantic}). Wie bereits im Abschnitt \ref{sub:RDF-Datenmodell} beschrieben, können gleiche URIs für unterschiedliche Ressourcen und unterschiedliche URIs für gleiche Ressourcen verwendet werden. Dieser Umstand erzwingt die Verwendung von wohldefinierten Schemata, sogenannte RDF-\textit{Vokabulare}. Unter einem RDF-Schema (RDFS) wird eine Menge von Bezeichnern mit definierter Bedeutung verstanden, die RDF semantisch erweitert und eine Beschreibung benutzerspezifischer Klassen erlaubt (vgl. \cite[S.~66-68]{hitzler2007semantic}).
+
+In den vorangegangenen Abschnitten wurde erläutert, wie Aussagen über Web-Ressourcen getätigt werden können, z.\,B. am konkreten Beispiel aus Listing \ref{list:rdf-xml}: \glqq Alice kennt Bob\grqq{}. Durch die Namensgebung \textit{Alice} und \textit{Bob} interpretiert der Anwender den Bezug zu Personen. Maschinen können nicht ohne Weiteres diesen Bezug herstellen. Die Verwendung von wohldefinierten Vokabularen soll die Interpretation dieser Aussage auch für Maschinen ermöglichen.
+
+Im Listing \ref{list:rdf-xml} wird durch die Verwendung des \textit{FOAF}-Vokabulars\footnote{ s. Spezifikation des FOAF-Vokabulars unter \url{http://xmlns.com/foaf/spec/}.} (Friend of a Friend) mit der URI \glqq foaf:knows \grqq{} impliziert, dass es sich hierbei bei Alice und Bob um Personen, also der Klasse \glqq foaf:Person\grqq{} handelt. Wie in vielen Programmiersprachen üblich, beginnen Klassen mit einem Großbuchstaben und Merkmale mit Kleinbuchstaben.
+
+Das Thema dieser Arbeit behandelt jedoch keine Beziehungen zwischen Personen, sondern die Analyse von statistischen Datensätzen. In den letzten Jahren hat sich zur Veröffentlichung solcher Datensätze nach dem Linked-Data-Prinzip das RDF Data Cube Vocabulary bewährt. Diese werden in den nächsten Abschnitten genauer betrachtet.
+
+\subsection{Statistical Linked Data}
+\label{sub:Statistical-Linked-Data}
+Das Linked-Data-Prinzip beschreibt eine Menge von bewährten Verfahren für das Veröffentlichen und Verlinken von strukturierten Daten im Web (vgl. \cite{bizer2009linked}). Die 2006 von Tim Berners-Lee veröffentlichte Arbeit \glqq Linked Data: Design Issues\grqq{} \cite{berners2006linkeddata} identifiziert vier Prinzipien für die standardisierte Veröffentlichung von Daten:
+
+\begin{itemize}
+  \item Die frei im Web verfügbaren Daten werden mit URIs identifiziert.
+  \item Das \textit{Hypertext Transfer Protocol} (HTTP) dient zum Auffinden dieser Daten über das Web.
+  \item Die Verlinkung dieser Daten soll mit etablierten Standards erfolgen, z.\,B. mittels RDF und der graphenbasierten Abfragesprache \textit{SPARQL}\footnote{ s. Spezifikation von SPARQL unter \url{http://www.w3.org/TR/2013/REC-sparql11-overview-20130321/}.} (rekursives Akronym: \textbf{S}PARQL \textbf{P}rotocol \textbf{A}nd \textbf{R}DF \textbf{Q}uery \textbf{L}anguage) (vgl. \cite{perez2006semantics}).
+  \item Das Hinzufügen von Links zu anderen URIs soll die Möglichkeit bieten, neue Daten und Informationen zu entdecken.
+\end{itemize}
+
+In den letzten Jahren ist das Interesse gestiegen, statistische Daten nach dem Linked-Data-Prinzip zu veröffentlichen und so die Möglichkeit zu bieten, Daten mit anderen Informationen aus unterschiedlichen Quellen und RDF Stores zu kombinieren. Ein Vorteil besteht hierbei darin, beliebige Zusatzinformationen mit den numerischen Daten verlinken zu können, um die Bedeutung der Daten näher zu bestimmen. Wie in Abschnitt \ref{Motivation} bereits erwähnt können z.\,B. Provenance-Informationen oder weitergehende Informationen hinzugefügt werden. Des Weiteren können auch interne Daten mit den numerischen Daten verlinkt und für die Analyse verwendet werden. Diese verlinkten Daten und Informationen werden als \textit{Statistical Linked Data} bezeichnet.
+
+Es existieren verschiedene Vokabulare, die für die Veröffentlichung statistischer Linked Data in Form von multidimensionalen Cubes verwendet werden können (vgl. \cite{hausenblas2009scovo}; \cite{vrandecic2010semantics}; \cite{etcheverry2012qb4olap}). Das RDF Data Cube Vocabulary hat sich jedoch weitestgehend durchgesetzt.
+
+\subsection{Das RDF Data Cube Vocabulary}
+\label{sub:rdf-data-cube-vocabulary}
+
+Das \textit{RDF Data Cube Vocabulary}\footnote{ s. Spezifikation von QB unter \url{http://www.w3.org/TR/2014/ REC-vocab-data-cube-20140116/}.} (QB) ist ein RDF-Vokabular und ein W3C-Standard zur Beschreibung statistischer Datensätze in Form von multidimensionalen Cubes (vgl. \cite{zancanaro2013publishing}). Die Veröffentlichung von statistischen Daten nach dem Linked-Data-Prinzip sowie die Repräsentation eines multidimensionalen Datenmodells mit RDF waren die wichtigsten Voraussetzungen bei der Entwicklung des QB-Vokabulars.
+
+Wie im Abschnitt \ref{subsub:olap-datenmodell} bereits erläutert, bietet das multidimensionale Datenmodell (MDM) eine leicht zu interpretierende Anordnung der statistischer Daten, sodass Analysten einfach und effizient durch den Datenraum navigieren können. Hauptaugenmerk liegt in der Unterstützung der betrieblichen Entscheidungsfindung.
+
+Statistische Daten können im Bereich Semantic Web mit dem QB-Vokabular beschrieben werden. Abbildung \ref{fig:rdf-qb-vocabulary} veranschaulicht einen Auszug der relevanten Klassen und Beziehungen des Schemata.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{rdf-qb-vocabulary}
+  \caption{Wichtigste Klassen und Beziehungen des RDF Data Cube Vokabulars. \newline Quelle: \url{http://www.w3.org/TR/2014/ REC-vocab-data-cube-20140116/}.}
+  \label{fig:rdf-qb-vocabulary}
+\end{figure}
+
+Der Datensatz (engl. \textit{Dataset}) umfasst die Dimensionen, Measures sowie die Beobachtungen (engl. \textit{Observations}) und Operationen, die mit den Daten ausgeführt werden können. Die wichtigsten Klassen und Beziehungen werden in der folgenden Auflistung näher erläutert.
+
+\begin{itemize}
+  \item Die Struktur des Cubes wird durch die Klasse \textit{qb:DataStructureDefiniton} (DSD) definiert. Analog zum OLAP-Konzept, bei dem die Daten in Fakten und Dimensionen unterteilt werden, findet bei QB eine Unterteilung der Daten in zwei Bereichen statt. Die erste Unterteilung durch die Property \textit{qb:structure} beschreibt den zugehörigen Datensatz des Cubes. Die zweite Unterteilung findet durch die Property \textit{qb:component} statt, welche für die Spezifikation der Dimensionen und Measures im Datensatz verantwortlich ist.
+  \item \textit{Observations} sind Instanzen von \textit{qb:Observation}. Sie stellen einzelne Beobachtung des Cubes dar und können aus einem oder mehreren Dimensionen und Measures bestehen. Analog zum OLAP-Konzept beschreibt eine Observation einen Fakt.
+  \item Die Klasse \textit{qb:DataSet} stellt die Gesamtmenge der Observations dar. Durch die Verbindung \textit{qb:structure} wird der Bezug zur Datenstruktur definiert.
+  \item \textit{qb:DimensionProperty}, \textit{qb:AttributeProperty} und \textit{qb:MeasureProperty} sind vererbte Klassen der \textit{qb:ComponentProperty}-Klasse und repräsentieren die Dimensionen, Attribute und Measures des Cubes. Analog zum OLAP-Konzept beschreibt die Klasse qb:DimensionProperty die Dimensionen, qb:MeasureProperty die Measures und qb:AttributeProperty zusätzliche Attribute des Cubes.
+  \item Im OLAP-Kontext besitzt jeder Fakt in der Regel einen Bezug zu einer konkreten Instanzen einer Dimensionen. Diese als Member bezeichnete Beziehung kann im QB-Vokabular entweder explizit, durch die Eigenschaft \textit{qb:codeList}, oder implizit durch das Vorkommen in den Fakten beschrieben werden.
+  \item In QB werden Hierarchien durch die Klasse \textit{skos:ConceptScheme} und die Levels durch \textit{skos:Concept} repräsentiert. Der Bezug eines Levels zu einer Hierarchie wird durch die Property \textit{skos:inScheme} definiert. Der Bezug zu einer konkreten Instanz einer Dimension wird durch die Property \textit{skos:member} bestimmt. Die Vater-Kind-Beziehung \textit{skos:narrower} ermöglicht die Navigation zwischen den Levels (vgl. \cite{kampgen2011transforming}).
+\end{itemize}
+
+In einem OLAP Cube wird in der Regel für jedes Measure eine Aggregationsfunktion definiert, wie z.\,B. \textit{sum}, \textit{min}, \textit{max}, \textit{avg} und \textit{count}. In QB gibt es keine Beschreibung dieser Aggregationsfunktionen für Measures. Daher wird in dieser Arbeit zur Beschreibung der Measures das QB4O-Vokabular\footnote{ s. Spezifikation von QB4O unter \url{http://purl.org/qb4olap/cubes\#}.} mit der Property \textit{qb4o:aggregateFunction} verwendet. Dies ermöglicht den Einsatz der URIs für die Aggregationsfunktionen \textit{qb4o:sum}, \textit{qb4o:min}, \textit{qb4o:max}, \textit{qb4o:avg} und \textit{qb4o:count}.
+
+Für die Analyse einer enorm großen Datenmenge sind Technologien aus dem Big-Data-Bereich notwendig. Diese werden im nächsten Kapitel einer Beschreibung unterzogen.
+
+\section{Big Data}
+\label{Big-Data}
+
+Es existieren unzählige Definitionen von Big Data (vgl. \cite[S.~34-37]{king2014big}). Die anerkannteste Definition charakterisiert Big Data anhand von drei bis vier Kriterien (vgl. \cite{laney20013d}; \cite[S.~35]{king2014big}; \cite[S.~7-8]{dorschel2015praxishandbuch}): \glqq Volume\grqq{}, \glqq Velocity\grqq{}, \glqq Variety\grqq{} und gegebenenfalls \glqq Veracity\grqq{}.
+
+\begin{description}
+  \item[Volumen (Volumne)] \hfill \\
+  Die große Menge an Daten ist der wesentlichste Aspekt von Big Data. Das anfallende Datenvolumen der zu verarbeitenden Informationen steigt stetig an. Ein Grund hierfür sind z.\,B. kleine und immer leistungsfähigere Computerchips, die in viele Lebensbereiche vordringen und neue Daten generieren. Dies führt zu einer anwachsenden Datenmenge, die bei der Analyse genutzt werden soll.
+  \item[Geschwindigkeit (Velocity)] \hfill \\
+  Dieses Merkmal wird nicht immer eindeutig interpretiert. Zum einen wird hierunter die Geschwindigkeit verstanden, mit der neue Daten entstehen (vgl. \cite[S.~7]{dorschel2015praxishandbuch}; \cite{fasel2014big}). Andererseits kann Velocity auch die Geschwindigkeit beschreiben, mit der Daten verarbeitet werden müssen (vgl. \cite[S.~35]{king2014big}).
+  \item[Vielfalt (Variety)] \hfill \\
+  Das Merkmal Variety kennzeichnet die Heterogenität der Daten. Die zunehmende Anzahl an Datenquellen, die für die Analyse herangezogen werden, kann zu stark variierenden oder gar unbekannten Datenstrukturen führen. Ferner sind für Big Data viele der relevanten Daten unstrukturiert. Auch in solchen Fällen sollen Analysen möglich sein und zu neuen Erkenntnissen führen.
+  \item[Richtigkeit (Veracity)] \hfill \\
+  Dieses Merkmal wird in einigen Big-Data-Definitionen als viertes Merkmal angesehen (vgl. \cite{bendler2014taming}; \cite[S.~35]{king2014big}). Diese Eigenschaft bezieht sich auf die Qualität der Daten bezogen auf die Richtigkeit und Vollständigkeit. Bevor betriebliche Entscheidungen getroffen werden können, muss die Korrektheit und die Relevanz der Daten zum Zeitpunkt der Analyse bekannt sein.
+\end{description}
+
+In der Regel übersteigen eine solche Datenmenge und die für die Analyse verwendeten Prozesse die Speicher- und Verarbeitungskapazität eines einzelnen Rechners. Aus diesem Grund hat sich in den letzten Jahren die Verwendung von \textit{Rechner-Clusters}\footnote{ Ein Cluster wird als Verbund von mehreren vernetzten Computern bezeichnet.} etabliert. Eine solche Architektur wurde dazu optimiert, eine Berechnung, eine Analyse oder ein Programm verteilt auf verschiedenen Rechnern parallel auszuführen. Die Eigenschaften einer solchen Architektur können in drei Bereiche zusammengefasst werden (vgl. \cite[S.~279]{dorschel2015praxishandbuch}; \cite[S.~65-66]{rahm2015verteiltes}):
+
+\begin{description}
+  \item[Parallele Verarbeitung der Daten] \hfill \\
+  Die Sicherstellung einer konstanten Verarbeitungszeit bei steigendem Datenvolumen durch verteilte Parallelverarbeitung muss gewährleistet sein. Durch die Speicherung der Daten auf lokalen Festplatten vieler Rechnerknoten soll eine Verarbeitung der Daten jeweils auf den Knoten durchgeführt werden, auf denen die Daten gespeichert wurden. Dies erlaubt einen gleichzeitig stattfindenden und unabhängigen Datenzugriff auf die Daten einzelner Rechner. Diese als \textit{Shared Nothing} bezeichnete Architektur soll eine lineare Skalierbarkeit garantieren, die praktisch unbegrenzt ist (vgl. \cite[S.~55-58]{rahm2015verteiltes}).
+  \item[Horizontale Skalierung] \hfill \\
+  Bei Bedarf kann durch Hinzufügen von neuen Rechnern die Kapazität des Clusters erweitert werden. Dieser Vorgang wird als horizontale Skalierung bezeichnet. Zur Vermeidung hoher Hardware-Kosten soll die Möglichkeit bestehen, das Cluster durch Rechner mit gewöhnlicher Hardware (engl. \textit{Commodity Hardware}) bereitzustellen und zu erweitern.
+  \item[Redundante Speicherung] \hfill \\
+  Zum Zweck der Fehlertoleranz und für eine Verbesserung der Antwortzeiten sollen die Daten auf mehrere Rechnerknoten repliziert und redundant gespeichert werden. Bei Ausfall eines Rechners kann der entsprechende Prozess auf einem anderen Rechnerknoten fortgesetzt werden. Zur Vermeidung eines inkonsistenten Systems müssen daher Datenänderungen auf alle Replikate übertragen werden. Ein weiterer Vorteil wird in der Ausführung eines Prozesses deutlich, indem ein Rechner mit hoher Last durch einen Rechner mit niedriger Last ersetzt werden kann.
+\end{description}
+
+Sowohl relationale Datenbanken, RDF Stores als auch OLAP Engines skalieren in der Regel nicht horizontal. Sie besitzen eine natürliche Grenze bzgl. ihrer Datenspeicher- und Datenverarbeitungskapazität (vgl. \cite[S.~260-262]{dorschel2015praxishandbuch}). Bei der Analyse großer Datenmengen sind daher Big-Data-Technologien mit den oben definierten Eigenschaften notwendig. Mit Apache Hadoop sind derartige Technologien in einem Open Source Software Stack verfügbar.
+
+\subsection{Das Apache-Hadoop-Framework}
+Für die verteilte Parallelverarbeitung großer Datenmengen hat sich Apache Hadoop\footnote{ s. Webseite des Apache Hadoop Projekts unter \url{http://hadoop.apache.org/}.} als Standard etabliert\footnote{ s. Apache Hadoop PowerdBy unter \url{http://wiki.apache.org/hadoop/PoweredBy}.}. Apache Hadoop ist ein quelloffenes und in Java entwickeltes Top-Level-Projekt der Apache Software Foundation.
+
+Die Hauptkomponenten von Apache Hadoop bestehen aus dem Hadoop Distributed File System und dem Programmiermodell MapReduce. In den nachfolgenden Abschnitten werden diese Komponenten einer näheren Betrachtung unterzogen.
+
+\subsection{Das verteilte Dateisystem von Apache Hadoop: HDFS}
+\label{sub:hdfs}
+Das \textit{Hadoop Distributes Files System} (HDFS) ist ein verteiltes Dateisystem, welches von Googles 2003 vorgestellte \textit{Googles File System} \cite{ghemawat2003google} inspiriert wurde (vgl. \cite{shafer2010hadoop}). Die wichtigsten Ziele des Entwurfs lagen in der Fehlertoleranz bei Commodity-Hardware-Umgebungen, in der Ausrichtung großer Datenmengen und in der parallelen Batch-Verar-beitung dieser Daten. Letzteres bezweckt einen hohen Lesedurchsatz anstelle von niedrigen Latenzen. Zusätzlich basiert die Umsetzung von HDFS auf der Annahme, dass Daten oft gelesen, aber selten bis gar nicht verändert werden (das sogenannte \textit{write-once-read-many}-Prinzip, vgl. \cite[S.~66-69]{rahm2015verteiltes}).
+
+HDFS baut auf einer Master-Slave-Architektur auf, bestehend aus dem Masterknoten \mbox{\textit{NameNode}} und mehreren \textit{DataNodes}. Der NameNode ist für die Verwaltung des Dateisystems sowie für den Dateizugriff des Clients verantwortlich. Der NameNode unterstützt eine Vielzahl von Operationen, wie z.\,B. das Öffnen, Schließen und Umbenennen von Dateien und Verzeichnissen. Die DataNodes dagegen sind für die Speicherung und Verwaltung der Daten zuständig. Bei der Speicherung der Daten im HDFS findet zunächst eine Aufteilung der Dateien in Datenblöcke statt. Diese Blöcke werden über die verschiedenen DataNodes horizontal verteilt. Die Größe des Blocks kann bei jedem Upload in das HDFS und pro Datei einzeln festgelegt werden (Standardwert ist 128 MB). Ferner kann pro Datei ein Replikationsfaktor definiert werden. Dieser Wert gibt die Anzahl der Replikationen von jedem einzelnen Block im HDFS an. Standardgemäß werden bei Apache Hadoop drei Replikationen angelegt. Die Zuordnung zwischen DataNode und Block erfolgt durch den NameNode. Zur Veranschaulichung der HDFS-Architektur dient die Abbildung \ref{fig:hdfs}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\textwidth]{hdfs}
+  \caption{Architektur von HDFS und Beispiel einer Leseoperation in Anlehnung an \cite[S.~67]{rahm2015verteiltes} und \cite[S.~280]{dorschel2015praxishandbuch}.}
+  \label{fig:hdfs}
+\end{figure}
+
+Die Matainformationen zur Verzeichnisstruktur und weitergehende Informationen (z.\,B. welcher Block wurde auf welchem DataNode gespeichert?) werden in dem lokalen Hauptspeicher des NameNodes gespeichert (vgl. \cite[S.~67]{rahm2015verteiltes}). Ferner werden alle Änderungsvorgänge in das lokale Dateisystem übertragen, um jederzeit einen nachvollziehbaren Ablauf der ausgeführten Operationen zu gewährleisten.
+
+Die Registrierung eines neuen DataNodes erfolgt über eine \textit{Heartbeat}-Message (vgl. \cite{shafer2010hadoop}). Zudem steht der NameNode in ständigem Kontakt mit allen Rechnern des Clusters. So wird gewährleistet, dass ein DataNode seiner Funktion nachkommen kann. Wird diese Nachricht in einer bestimmten Zeitspanne nicht übermittelt, geht der NameNode von einem Ausfall des Rechners aus und führt Maßnahmen zur Neuverteilung der verlorenen Blöcke auf die restlichen DataNodes durch.
+
+Da ein NameNode einen \textit{Single-Point-of-Failure} darstellt, ist es üblich, bei Ausfall des NameNodes die Verfügbarkeit des Dateisystems durch einen zweiten NameNode sicherzustellen, dem sogenannten \textit{Secondary NameNode} (s. Abbildung \ref{fig:hdfs}).
+
+Der Ablauf von Operationen ist bei HDFS fest vordefiniert. Wie in Abbildung \ref{fig:hdfs} dargestellt, kontaktiert der Client, z.\,B. bei einer Lese-Operation, zuerst den NameNode. Dieser liefert eine Liste mit allen DataNodes, die eine Replikation der benötigten Blöcke aufweisen. Anschließend kontaktiert der Client die DataNodes direkt an, um die Blöcke der benötigten Dateien anzufordern.
+
+Die Replikation der Datenblöcke im HDFS dient nicht nur dem Zweck der Fehlertoleranz und der Ausfallsicherheit, wie der nächste Abschnitt zeigen soll.
+
+\subsection{Parallele Ausführung mit dem Programmiermodell MapReduce}
+\label{sub:mapreduce}
+\textit{MapReduce} ist ein von Google 2004 vorgestelltes Programmiermodell für die parallele Verarbeitung großer, unstrukturierter oder semi-strukturierter verteilter Datensätze in Rechner-Clustern (vgl. \cite{dean2004mapreduce}). Aufgrund der Einfachheit, Ausfallsicherheit und hohen Flexibilität hat das MapReduce-Modell eine weite Verbreitung erfahren, vor allem durch die frei verfügbare Implementierung in Apache Hadoop.
+
+Das Hauptziel einer MapReduce-Funktion liegt darin, ein definiertes Problem in mehrere Teilaufgaben, sogenannte \textit{Map-Task}, zu zerlegen, diese über die Rechner eines Clusters für die parallele Berechnung zu verteilen und die Zwischenergebnisse innerhalb des Clusters auszutauschen. Nach Beendigung der Berechnungen werden die Zwischenergebnisse durch sogenannte \textit{Reduce-Tasks} aggregiert und zu einem Endergebnis zusammengefasst (vgl. \cite[S.~280-281]{dorschel2015praxishandbuch}). Eine parallele Ausführung ist möglich, da die Prozesse zur Berechnung der Ergebnisse zu den verarbeitenden Daten bewegt werden.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\textwidth]{mapreduce}
+  \caption{Gesamtablauf eines MapReduce-Jobs in Apache Hadoop, angelehnt an \cite[S.~69]{rahm2015verteiltes}.}
+  \label{fig:mr}
+\end{figure}
+
+Ähnlich wie HDFS basiert auch die MapReduce-Engine von Apache Hadoop auf der Master-Slave-Architektur. Ein auszuführender MapReduce-Prozess, ein sogenannter \textit{Job}, wird vom Master-Knoten, dem sogenannten \textit{JobTracker}-Knoten, in mehrere \textit{Tasks} zerlegt. Der JobTracker dient als Koordination- und Kontroll-Komponente eines MapReduce-Jobs und weist, nach der Zerlegung des Jobs in mehrere Tasks, diese den sogenannten \textit{Worker}-Knoten zu. Zudem steht der JobTracker-Knoten in ständigem Kontakt mit den Worker-Knoten. So soll sichergestellt werden, dass abgebrochene Tasks erneut ausgeführt werden. Abbildung \ref{fig:mr} veranschaulicht den Gesamtablauf eines MapReduce-Prozesses in Hadoop.
+
+Grundlegendes Ziel bei der Ausführung eines MapReduce-Jobs ist die Zuweisung eines Task an einen Worker-Knoten, der im HDFS den für den Prozess notwendigen Block gespeichert hat. Dies führt zu einem lokalen Lesezugriff. Wurde der benötigte Datenblock zuvor nicht lokal gespeichert, muss dieser zuerst über HDFS angefordert und lokal gespeichert werden.
+
+Die Aufgabe einer MapReduce-Funktion besteht darin, eine große Datenmenge von \textit{Key-Value}-Paaren zusammenzufassen und auf eine kleinere Menge von Key-Value-Paaren zu reduzieren. Hierbei bilden die zwei Funktionen \textit{Map} und \textit{Reduce} die Hauptkomponenten der Berechnung.
+\begin{align*}
+map(key_{in}, value_{in}) & \rightarrow [(key^1_{tmp},value^1_{tmp}), \dots , (key^n_{tmp}, value^n_{tmp})]\\
+reduce([(key^s_{tmp}, [value^t_{tmp}, \dots , value^u_{tmp}])]) & \rightarrow [(key^q_{out}, value^q_{out}), \dots , (key^p_{out}, value^p_{out})]
+\end{align*}
+
+Ein wesentlicher Schritt eines MapReduce-Jobs ist die \textit{Shuffle}-Phase. Voraussetzung für die Ausführung eines Reduce-Tasks ist die Sortierung der Ergebnisse eines Map-Tasks nach ihrem Key und dem Zusammenfassen der berechneten Values in eine Liste (vgl. \cite[S.~70]{rahm2015verteiltes}).
+
+Nachdem in der Shuffle-Phase das Ergebnis des Map-Tasks sortiert und auf der Festplatte des Workers gespeichert wurde, wird der Reduce-Task angestoßen. Dabei findet anhand der Keys eine Aggregierung der Values statt. Anschließend wird das Ergebnis in eine HDFS-Datei gespeichert. Da es sich bei einem Worker-Knoten auch gleichzeitig um ein DataNode handelt, wird das Ergebnis entsprechend der Erläuterung im vorangegangenen Abschnitt \ref{sub:hdfs} horizontal verteilt und repliziert.
+
+\subsubsection{MapReduce - Beispiel}
+
+In diesem Abschnitt soll das MapReduce-Programmiermodell anhand eines Beispiels erläutert werden. Analog zu HelloWorld-Programmen gibt es bei MapReduce das \textit{Word-Count}-Beispiel. Hierbei sollen in einem Text die Anzahl der Wörter ermittelt werden. Abbildung \ref{fig:mr-example-word-count} dient dabei der Veranschaulichung.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.95\textwidth]{mp-example-word-count}
+  \caption{Word-Count-Beispiel eines MapReduce-Jobs mit drei Map- und drei Reduce-Tasks, eigene Darstellung.}
+  \label{fig:mr-example-word-count}
+\end{figure}
+
+Die Eingabe besteht aus einer Text-Datei mit einem beliebigen Inhalt. Durch die Speicherung im HDFS wird die Datei in drei Datenblöcke unterteilt und auf die Rechner des Cluster verteilt. Der Map-Task transformiert jedes Wort in ein Key-Value-Paar. Beispielsweise könnte die Map-Phase die Eingabe wie folgt umwandeln:
+\begin{align*}
+map(sentence_1, \text{\glqq Hello World Bye World\grqq{}}) & \rightarrow [ (\text{hello}, 1), (\text{world}, 2), (\text{bye}, 1) ]\\
+map(sentence_2, \text{\glqq Hello Hadoop Bye Bye\grqq{}}) & \rightarrow [ (\text{hello}, 1), (\text{hadoop}, 1), (\text{bye}, 2) ]\\
+map(sentence_3, \text{\glqq Hello MR Goodbye MR\grqq{}}) & \rightarrow [ (\text{hello}, 1), (\text{mr}, 2), (\text{goodbye}, 1) ]
+\end{align*}
+Die Shuffle-Phase sortiert die berechneten Paare nach ihrem Key in alphabetischer Reihenfolge und fasst die berechneten Values in einer Liste zusammen. Dieses Ergebnis dient als Eingabe der Reduce-Funktionen. Der Reduce-Job hat die Aufgabe, die Elemente in der Liste zu zählen und in einem Wert zu aggregieren.
+\begin{align*}
+reduce([(\text{bye}, [ 1, 2 ]), (\text{goodbye}, [ 1 ])]) & \rightarrow [ (\text{bye}, 3), (\text{goodbye}, 1) ]\\
+reduce([(\text{hadoop}, [ 1 ]), (\text{hello}, [ 1, 1, 1 ])]) & \rightarrow [ (\text{hadoop}, 1), (\text{hello}, 3) ]\\
+reduce([(\text{mr}, [ 2 ]), (\text{world}, [ 2 ])]) & \rightarrow [ (\text{mr}, 2), (\text{world}, 2) ]
+\end{align*}
+Die Ausgabe der Reduce-Funktionen wird zu einem Endergebnis zusammengefasst und in einer Datei im HDFS gespeichert.
+
+Im diesem Abschnitt wurde das Konzept des MapReduce-Programmiermodells an einem Beispiel erläutert. Die Entwicklung von MapReduce-Jobs erfordert für unternehmensspezifische Analysen zur Entscheidungsfindung jedoch spezialisierte Software-Entwickler. Diese Prozesse sind bei Änderungen schwierig zu pflegen. Ferner ist ein Umzug eines bestehenden MapReduce-Jobs in einen neuen oder ähnlichen Kontext in der Regel nicht leicht umzusetzen. Aus diesem Grund wird im nächsten Abschnitt Apache Hive vorgestellt.
+
+\subsection{Apache Hadoops Data Warehouse: Apache Hive}
+\label{sub:hive}
+Apache \textit{Hive}\footnote{ s. Webeite von Apache Hive unter \url{https://hive.apache.org/}.} ist eine 2009 von Facebook veröffentlichte Open Source Data-Warehousing-Lösung für Apache Hadoop (vgl. \cite{thusoo2009hive}, s. Abbildung \ref{fig:hive}). Ähnlich wie bei relationalen Datenbanken werden die Daten in tabellarischer Form mit Spalten und Zeilen dargestellt, wobei die Daten im HDFS gespeichert und horizontal verteilt werden. Diese Daten lassen sich mit der zugehörigen SQL-ähnlichen Abfragesprache \textit{HiveQL} (Hive Query Language) abfragen. HiveQL unterstützt neben primitiven Datentypen wie z.\,B. Strings, Integer und Boolean auch Mengen (engl. \textit{Collections}) wie Arrays, Maps und verschachtelte Kombinationen beider Datenstrukturen (vgl. \cite{thusoo2010hive}). Eine HiveQL-Abfrage wird bei der Ausführung automatisch in ein oder mehreren MapReduce-Jobs kompiliert und auf Apache Hadoop ausgeführt. Zusätzlich ist es möglich, benutzerspezifische MapReduce-Skripte in die Abfragen zu integrieren.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{hive}
+  \caption{Architektur von Apache Hive auf Basis von Apache Hadoop in Anlehnung an \cite{thusoo2009hive}.}
+  \label{fig:hive}
+\end{figure}
+
+Die zugrundeliegende I/O-Bibliotheken in Hive erlauben unterschiedliche Datenstrukturen. So ist es möglich, zeilenbasierte Textdateien wie CSV-Dateien oder komprimierte Dateien, wie z.\,B. im Avro\footnote{ s. Apache Avro Dokumentation unter \url{http://avro.apache.org/docs/current/}.}- oder Parquet\footnote{ s. Apache Parquet Dokumentation unter \url{https://parquet.apache.org/documentation/latest/}.}-Format, im HDFS abzulegen und mit HiveQL abzufragen.
+
+Für die Speicherung der Metainformationen von Hive-Tabellen ist der sogenannte \textit{Hive-Metastore} zuständig. In der Regel wird hierfür eine relationale Datenbank wie MySQL verwendet. Dieser Katalog speichert neben dem Hive-Schemata (Welche Hive-Tabellen existieren? Welche Spalten enthalten die Hive-Tabellen? Welchen Datentyp haben die Spalten? Welches Datenformat wird verwendet?) auch zusätzlich statistische Datenwerte (Wie viele Einträge besitzt die Hive-Tabelle? Wie viel Speicherplatz wird verbraucht?), die bei der Abfrage-Optimierung und Generierung der MapReduce-Jobs benötigt werden (vgl. \cite{thusoo2009hive}; \cite{thusoo2010hive}).
+
+Ein großer Vorteil von Apache Hive ist die mögliche Anbindung mittels eines JDBC\footnote{ JDBC steht für Java Database Connection. Sie definiert eine einheitliche Schnittstelle (API) zu Datenbanken unterschiedlichster Hersteller.}-Treibers, welcher in dieser Abschlussarbeit bei der Umsetzung des ETL-Prozesses eine wesentliche Rollen spielen wird. Zusätzlich wird in der Konzeption der Wide Column Store Apache HBase eine wichtige Funktion haben. Dies ist Gegenstand des nächsten Abschnitts.
+
+\subsection{Apache Hadoops Datenbank: Apache HBase}
+\label{sub:hbase}
+
+Apache \textit{HBase}\footnote{ s. Webseite von Apache HBase unter \url{http://hbase.apache.org/}.} ist eine von Googles \textit{BigTable} \cite{chang2006bigtable} inspirierte, spaltenorientierte, fehlertolerante und horizontal skalierbare Datenbank auf Basis von HDFS. Sie zählt zu den sogenannten \textit{NoSQL}-Datenbanksystemen\footnote{ NoSQL (Not only SQL) bezeichnet Datenbanken, die einen nicht-relationalen Ansatz verfolgen und in der Regel nicht mit der Abfragesprache SQL abgefragt werden können.} (vgl. \cite[S.~457]{george2011hbase}).
+
+Ähnlich wie bei relationalen Datenbanken basiert das Datenmodell von HBase auf Tabellen. Eine HBase-Tabelle besteht aus Zeilen und Spalten. Eine Zeile beschreibt einen Datensatz, während eine Spalte ein Attribut repräsentiert. Entsprechend einem Primärschlüssel in relationalen Datenbanken erfolgt jeder Zugriff auf eine Zeile in HBase durch einen nicht veränderbaren und eindeutigen Schlüssel (engl. \textit{Row Key}). HBase verwendet für den Row Key ein Byte-Array, wodurch dem Entwickler bei der Definition eines Schlüssels viel Spielraum geboten wird (vgl. \cite[S.~66]{redmond2012sieben}).
+
+Spalten können zur Laufzeit hinzugefügt werden. Leere Zeilen existieren in HBase nicht. Das Anlegen einer Zeile findet nur dann statt, wenn sie einen Wert besitzt. Zusätzlich werden die Zeilen versioniert. Aus diesem Grund fügt HBase bei Einfügeoperationen automatisch einen Zeitstempel (engl. \textit{Timestamp}) hinzu.
+
+Ein wichtiges Unterscheidungsmerkmal von HBase im Vergleich zu relationalen Datenbanken ist das Datenschema. Das Datenschema in HBase wird durch eine Tabelle, eine Spaltenfamilie (engl. \textit{Column Family}) und deren Eigenschaft festgelegt. Die Column Family ist ein von Googles BigTable übernommenes Konzept (vgl. \cite{chang2006bigtable}; \cite[S.~66]{redmond2012sieben}). Die Daten einer Column Family werden physisch zusammenhängend gespeichert. Dies führt bei Abfragen zu kürzeren Ausführungszeiten. Aus diesem Grund ermöglicht HBase zufällige Lese- und Schreiboperationen in Echtzeit für große Datenmengen (vgl. \cite{redmond2012sieben}).
+
+Der Zugriff auf eine Spalte erfolgt über den Verbund zwischen der Column Family und dem Bezeichner der Spalte in Form von $[Column Family]:[Spaltenbezeichner]$. Eine Column Family muss vorab als Teil des Schemata einer HBase-Tabelle definiert sein. Spalten können zu jedem Zeitpunkt zu einer Column Family hinzugefügt werden, solange diese existiert.
+
+Das zugrundeliegende Datenmodell von HBase ist ein assoziatives Array\footnote{ Ein assoziatives Array wird auch als \textit{Map} oder \textit{Dictionary} bezeichnet.}. Die Zeilen können wiederum auch als ein assoziatives Array gesehen werden (Row Key $\rightarrow$ Column Family). Die Werte der Column Family werden ebenfalls als assoziatives Array betrachtet. Aus diesem Grund wird das Datenmodell von HBase als ein mehrdimensionales assoziatives Array bezeichnet.
+
+Ähnlich wie Apache Hadoop baut Apache HBase auf einer Master-Slave-Architektur auf. Der zentrale Master-Knoten, der sogenannte \textit{MasterServer}, überwacht die Slave-Knoten, die in HBase als \textit{RegionServer} bezeichnet werden. Der MasterServer übernimmt die Verteilung der Daten auf die verschiedenen RegionServer. Diese wiederum stellen den Datenzugriff sicher und übernehmen die Speicherung der Daten ins HDFS. Abbildung \ref{fig:hbase-architektur} zeigt ein Beispiel eines Clusters mit mehreren RegionServer.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\textwidth]{hbase}
+  \caption{Architektur von HBase, angelehnt an \cite[S.~79]{redmond2012sieben}.}
+  \label{fig:hbase-architektur}
+\end{figure}
+
+Zu Beginn werden die Daten einer HBase-Tabelle in einer einzelnen \textit{Region} gespeichert. Überschreitet die Datenmenge einen definierbaren Schwellwert, wird die Region durch den MasterServer automatisch in zwei neue Regionen mit gleicher Größe geteilt und auf die verfügbaren RegionServer übertragen. Aufgrund der Sortierung der Datensätze nach dem Row Key kann zu jedem Zeitpunkt der RegionServer ermittelt werden, der die benötigten Daten lokal gespeichert hat.
+
+Im Gegensatz zum Masterknoten in HDFS und MapReduce übernimmt Apache \mbox{Zookeeper}\footnote{ s. Apache Zookeeper Webseite unter \url{https://zookeeper.apache.org/}.} die Funktionen und Aufgaben wie die Synchronisation, die Konfiguration und die Ausfallsicherheit von HBase (vgl. \cite{hunt2010zookeeper}). Zookeeper ist eine Koordinierungsstelle für verteilte Systeme und vereinfacht die Umsetzung und Überwachung von verteilten Anwendungen.
+
+HBase bietet einen wahlfreien Zugriff auf extrem große Datenmengen und eignet sich besonders gut als horizontal skalierende Datenbank zur Datenhaltung mehrerer Milliarden Datensätze (vgl. \cite[S.~80]{redmond2012sieben}). Aus diesem Grund wird HBase im Rahmen dieser Abschlussarbeit von besonderer Bedeutung sein.

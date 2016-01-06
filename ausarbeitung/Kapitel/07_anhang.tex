@@ -1,0 +1,75 @@
+\begin{appendix}
+\chapter{Anhang}
+Im Rahmen der Abschlussarbeit wurde bei Github eine Projektseite angelegt. Diese ist unter der URL \url{https://github.com/sjelsch/etl-evaluation} aufrufbar. Auf dieser Seite ist der Quellcode des ETL-Prozesses sowie eine ausführbare JAR-Datei mit Anleitung zu finden. Des Weiteren werden die Schritte für die Datengenerierung mit dem Star Schema Benchmark sowie die eingesetzte DataStructureDefinition-Datei auf der Seite beschrieben.
+
+Neben einer Auflistung der verwendeten analytischen Abfragen beinhaltet diese Projektseite auch eine kurze Beschreibung der OLAP-Abfragen. Ferner sind die Ergebnisse der Evaluation für jeden einzelnen Durchgang aufgelistet.
+
+\section{KylinDialect in Mondrian}
+\label{anhang_kylin_dialect}
+
+An dieser Stelle wird der entwickelte \textit{KylinDialect} für die Interaktion von Mondrian mit Apache Kylin vorgestellt. Dieser Quellcode wurde im Rahmen der Abschlussarbeit im Mondrian-Projekt in einem Pull Request\footnote{ s. Pull Request unter \url{https://github.com/pentaho/mondrian/pull/480}.} bei Github festgehalten.
+\mbox{}\\
+\begin{lstlisting}[language=Java,caption={Java-Klasse \textit{KylinDialect} in Mondrian.},label=list:kylin-sql-dialekt-complete]
+package mondrian.spi.impl;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+/**
+ * Implementation of {@link mondrian.spi.Dialect} for Kylin.
+ *
+ * @author Sébastien Jelsch
+ * @since Dez 28, 2015
+ */
+public class KylinDialect extends JdbcDialectImpl {
+    public static final JdbcDialectFactory FACTORY =
+            new JdbcDialectFactory(KylinDialect.class, DatabaseProduct.KYLIN) {
+                protected boolean acceptsConnection(Connection connection) {
+                    return super.acceptsConnection(connection);
+                }
+            };
+
+    /**
+     * Creates a KylinDialect.
+     */
+    public KylinDialect(Connection connection) throws SQLException {
+        super(connection);
+    }
+
+    @Override
+    public boolean allowsCountDistinct() {
+        return false;
+    }
+
+    @Override
+    public boolean allowsJoinOn() {
+        return true;
+    }
+}
+\end{lstlisting}
+\newpage
+\section{RDF-Prefixe}
+\label{sec:rdf-prefixe}
+In Tabelle \ref{tab:verwendete-prefixe} werden alle in dieser Arbeit verwendeten Prefixe, die dazugehörigen URIs und die Namen der Vokabulare aufgelistet.
+
+\begin{table}[h!]
+\footnotesize
+\centering
+\begin{tabular}{l|l|l}
+  \textbf{Prefix} & \textbf{Namespace URI} & \textbf{Vocabulary} \\ \hline \hline
+  qb4o & \url{http://purl.org/qb4olap/cubes#} & Vocabulary for Business Intelligence \\ \hline
+  qb & \url{http://purl.org/linked-data/cube#} & RDF Data Cube Vocabulary \\ \hline
+  rdf & \url{http://www.w3.org/1999/02/22-rdf-syntax-ns#} & RDF Core \\ \hline
+  rdfh-inst & \url{http://lod2.eu/schemas/rdfh-inst#} & BIBM RDF Vocabulary (Instances) \\ \hline
+  rdfh & \url{http://lod2.eu/schemas/rdfh#} & BIBM RDF Vocabulary (Schema) \\ \hline
+  rdfs & \url{http://www.w3.org/2000/01/rdf-schema#} & RDF Schema \\ \hline
+  skos & \url{http://www.w3.org/2004/02/skos/core#} & Simple Knowledge Organization System \\ \hline
+  skosclass & \url{http://ddialliance.org/ontologies/skosclass#} & SKOS extension for classifications \\ \hline
+  xkos & \url{http://purl.org/linked-data/xkos#} & SKOS Extension for Statistics \\ \hline
+  xsd & \url{http://www.w3.org/2001/XMLSchema#} & Schema Datatypes in RDF and OWL \\ \hline
+\end{tabular}
+\caption{Auflistung der verwendete Prefixe mit zugehörigen URIs und Vokabulare.}
+\label{tab:verwendete-prefixe}
+\end{table}
+
+\end{appendix}

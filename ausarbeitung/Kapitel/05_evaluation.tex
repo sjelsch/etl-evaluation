@@ -1,0 +1,1635 @@
+\chapter{Evaluation}
+\label{cha:evaluation}
+
+In diesem Kapitel wird der entwickelte ETL-Prozess experimentell untersucht. Die Evaluation soll zeigen, ob die skalierbare Architektur für sehr große RDF-Datenmengen geeignet ist. Im ersten Abschnitt \ref{sec:eval-ziele} werden die Ziele der Evaluation aufgelistet. Abschnitt \ref{sec:cluster_umgebung} behandelt die Cluster-Umgebung des Experiments und Abschnitt \ref{sec:eval-datageneration} erläutert das Datenmodell des Star Schema Benchmarks. Im darauffolgenden Abschnitt \ref{sec:eval-etl-process} wird der ETL-Prozess auf einem Cluster mit unterschiedlicher Anzahl an DataNodes und unterschiedlichen Datenmengen untersucht. Der vorletzte Abschnitt \ref{sec:eval-olap-queries} behandelt die Auswirkung der verschiedenen Clustergrößen auf die Ausführungsdauer der analytischen Abfragen bei unterschiedlich großen Datenmengen.
+
+\section{Ziel der Evaluation}
+\label{sec:eval-ziele}
+
+Das Ziel der Abschlussarbeit ist die Bewertung des entwickelten ETL-Prozesses. Im Folgenden werden einige wichtige Fragestellungen zum ETL-Prozess beschrieben, die im Rahmen der Evaluation beantwortet werden:
+
+\begin{compactitem}
+  \item Hat die horizontale Skalierung des ETL-Prozesses bei verschieden großen Datenmengen einen messbaren Effekt?
+  \item Wird der ETL-Prozess auf einem kleinen Cluster und mit kleiner Datenmenge effizient ausgeführt?
+  \item Wird der ETL-Prozess in kürzerer Zeit ausgeführt als ein Import äquivalenter Daten in eine relationale Datenbank bzw. als ein Import in einem RDF Store?
+\end{compactitem}
+
+Zusätzlich sollen die im Folgenden aufgelisteten Fragestellungen zu den analytischen Abfragen beantwortet werden:
+
+\begin{compactitem}
+  \item Wird die Ausführungsdauer der analytischer Abfragen durch das Hinzufügen von DataNodes beeinflusst?
+  \item Werden die analytischen Abfragen mit deaktiviertem Mondrian-Cache interaktiv beantwortet?
+  \item Gibt es einen Unterschied bezüglich der Antwortzeiten zwischen SQL- und MDX-Abfragen?
+\end{compactitem}
+
+Bevor jedoch auf die Ausführungszeiten des ETL-Prozesses und der analytischen Abfragen eingegangen werden kann, soll die Cluster-Umgebung des Experiments beschrieben werden.
+
+\section{Cluster-Umgebung}
+\label{sec:cluster_umgebung}
+
+Zum Zweck einer reproduzierbaren und vergleichbaren Evaluation wurden die Experimente auf einem Amazon Web Services (AWS) Rechnercluster durchgeführt. Als Distribution wurde CDH (Cloudera Distribution Including Apache Hadoop) in der Version 5.3.8 gewählt. Die Installation erfolgte durch Cloudera Director\footnote{ s. Cloudera Director Webseite unter \url{http://www.cloudera.com/content/www/en-us/products/cloudera-director.html}.} in der Version 1.5.2. Cloudera Director bietet die Möglichkeit, mit wenig Aufwand ein Cluster bei AWS mit bis zu 1000 Knoten zu erstellen. Außerdem kann so die Größe
+des Testsystems flexibel angepasst werden, um horizontale Skalierungseffekte zu untersuchen. Zusätzlich installiert Cloudera Director das Monitoring-Programm Cloudera Manager\footnote{ s. Cloudera Manager Webseite unter \url{https://www.cloudera.com/content/www/en-us/products/cloudera-manager.html}.}, was eine individuelle Konfiguration des Clusters ermöglicht.
+
+Bei AWS stehen verschiedene Instanztypen zur Verfügung. Für den MasterNode sowie für jeden DataNode wurde jeweils eine Amazon EC2-Instanz (Elastic Compute Cloud) vom Typ \textit{m4.xlarge} gewählt. Jeder DataNode dieses Typs verfügt somit über einen Intel Xeon E5-2676 v3 Prozessor mit vier vCPUs (dabei entspricht eine vCPU einem Hyperthread), der mit 2,4 GHz getaktet ist. Zudem weist eine m4.xlarge-Instanz über 16 GiB Arbeitspeicher auf. Als Betriebsystem wurde Red Hat Enterprise Linux in der Version 6.6 (Amazon Maschine Image ami-cf3b47b8) verwendet.
+
+Die in der Evaluation verwendete Konfiguration des Apache Hadoop Clusters ist in Listing \ref{list:cdh-config} dargestellt. Alle anderen Werte des Hadoop-Ökosystems wurden bei der Evaluation nicht verändert.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=bash,caption={Durchgeführte Konfiguration des Apache Hadoop Clusters.},label=list:cdh-config]
+mapreduce.map.memory.mb = 3072
+mapreduce.map.java.opt = 2048
+
+mapreduce.reduce.memory-mb = 5120
+mapreduce.reduce.java.opt = 4096
+\end{lstlisting}
+\end{minipage}
+
+Diese Hadoop-Konfigurationen waren für die Durchführung der Experimente notwendig, da Apache Kylin beim Cube-Build-Prozess bei größer werdender Datenmenge mehr Speicherzuweisung benötigte, als mit den Standardwerten bei der Einrichtung des Clusters mit Cloudera Director erzielt werden konnten.
+
+\section{Datengenerierung mit dem Star Schema Benchmark}
+\label{sec:eval-datageneration}
+
+Im Rahmen der Evaluation wurde für die Datengenerierung der Star Schema Benchmark verwendet (vgl. \cite{o2009star}). Im ersten Abschnitt wird zunächst auf das Datenmodell näher eingegangen. Der zweite Abschnitt erläutert die Vorgehensweise bei der Generierung der RDF-Daten im QB-Vokabular.
+
+\subsection{Das SSB-Datenmodell}
+
+Der Star Schema Benchmark (SSB) beschreibt einen OLAP Cube mit den Dimensionen \textit{Customer}, \textit{Date}, \textit{Part}, \textit{Supplier}, \textit{Quantity} und \textit{Discount}. Die \textit{Date}-Dimension enthält zwei Hierarchien. Die anderen Dimensionen des OLAP Cubes besitzen dagegen nur eine einzelne Hierarchie. Die Dimensionen \textit{Quantity} und \textit{Discount} haben keine Attribute und werden im SSB in der Faktentabelle gespeichert. Abbildung \ref{fig:eval_data_model} veranschaulicht das SSB-Datenmodell. Die Hierarchien und damit einhergend die Levels der jeweiligen Dimensionen werden in Abbildung \ref{fig:eval_hier_levels} aufgeführt. Zudem beinhaltet die Faktentabelle sieben Measures und Aggregationsfunktionen:
+\begin{itemize}
+  \item discount (avg),
+  \item extendedprice (sum),
+  \item quantity (sum),
+  \item lo\_revenue (sum),
+  \item supplycost (sum),
+  \item sum\_revenue (sum(extendedprice * discount)),
+  \item sum\_profit (sum(lo\_revenue - supplycost)).
+\end{itemize}
+
+Ferner stellt der Benchmark 13 unterschiedliche analytische OLAP-Abfragen bereit (vgl. \cite{o2009star}; \cite{NoSize}). Aus Gründen der Übersichtlichkeit ist eine Auflistung dieser OLAP-Anfragen an dieser Stelle nicht sinnvoll. Daher wurde bei Github eine Projektseite\footnote{ s. Projektseite unter \url{https://github.com/sjelsch/etl-evaluation}.} angelegt, die neben einer Auflistung auch eine Beschreibung der OLAP Queries und die Ergebnisse der Evaluation beinhaltet.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{data_cube_schema}
+  \caption{SSB-Datenmodell mit der Faktentabelle \textit{lineorder} und den sechs Dimensionstabellen in Anlehnung an \cite{o2009star}.}
+  \label{fig:eval_data_model}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{hierarchies_ssb}
+  \caption{Hierarchien und Levels der Dimensionen des SSB-Datenmodells.}
+  \label{fig:eval_hier_levels}
+\end{figure}
+
+\newpage
+
+\subsection{Generierung der RDF-Daten im QB-Vokabular}
+
+Mit dem Star Schema Benchmark werden tabellarische Daten (TBL) generiert. Der Skalierungsfaktor bestimmt die Datenmenge. Dieser Parameter wird bei der Evaluation drei Mal variiert und der ETL-Prozess sowie die Antwortzeiten der analytischen Abfragen mit Skalierung 1 (S1), Skalierung 10 (S2) und Skalierung 20 (S20) untersucht.
+
+Die erstellten TBL-Daten können ohne großen Aufwand in relationale Datenbanken imporiert werden. Für die Generierung der RDF-Daten im QB-Vokabular sind jedoch weitere Schritte notwendig. Hierfür wird das Business Intelligence Benchmark\footnote{ s. Webseite unter \url{http://sourceforge.net/projects/bibm/}.} (BIBM) in der Version 0.7.8 verwendet. Mithilfe einer BIBM-Konfigurationsdatei\footnote{ s. Datei \textit{ttl/01\_schema.json} auf der Projektseite.} werden die generierten TBL-Daten in RDF-Daten umgewandelt. Nach dieser Transformation sind jedoch noch zwei zusätzliche Schritte notwendig, um die Daten im QB-Vokabular zu erhalten.
+
+\begin{itemize}
+  \item Die Fakten müssen als Observations (\textit{qb:Observation}) deklariert werden und einen Link mit der Property \textit{qb:dataSet} zum Datensatz \textit{rdfh-inst:ds} aufweisen (vgl. Abschnitt \ref{sub:rdf-data-cube-vocabulary}).
+  \item Der zweite Schritt beinhaltet die Generierung der Triples für die Levels der Hierarchien. Dazu werden die RDF-Daten in den Triples Store \textit{Open Virtuoso} geladen. Anschließend werden mit vier hintereinander ausgeführten SPARQL Insert-Abfragen die Levels der Hierarchien der Dimensionen \textit{Customer}, \textit{Date}, \textit{Part} und \textit{Supplier} erstellt.
+\end{itemize}
+
+Im Ergebnis wird eine RDF-Datenmenge im QB-Vokabular erstellt. Die Definition des OLAP Cubes im QB-Vokabular wird in der Datei dsd.ttl festgelegt, welche ebenfalls auf der Github-Projektseite zu finden ist.
+
+Die Ausführungszeiten bei der Generierung der RDF-Datenmenge mit den Skalierungen S1, S10 und S20 werden in Tabelle \ref{tab:data-generierung} aufgelistet. Gemessen wurde die benötigte Zeit für die Generierung der TBL-Daten mit dem Star Schema Benchmark, die Transformation der Daten mit der BIBM-Konfigurationsdatei, der Import der Dimensionen in den Triples Store, die Generierung der Levels, die Transformation der RDF-Daten vom Turtle- in das N-Triples-Format sowie die benötigte Zeit für die gZip-Kompression.
+
+Die Anzahl der Triples bei den Skalierungen S1, S10 und S20 ist in Tabelle \ref{tab:number-triples} aufgelistet. Die Tabelle \ref{tab:rdf-ntriples-size} enthält die Größen der N-Triples-Dateien in MB.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{l|r|r|r}
+   & \multicolumn{1}{l}{\textbf{Skalierung 1}} & \multicolumn{1}{|l}{\textbf{Skalierung 10}} & \multicolumn{1}{|l}{\textbf{Skalierung 20}} \\ \hline \hline
+TBL-Daten-Generierung  & 16s  & 161s   & 323s   \\ \hline
+TBL-2-TTL              & 41s  & 577s   & 1 164s \\ \hline
+Bulk Import in Open Virtuoso & 12s & 52s & 79s \\ \hline
+TTL-Levels-Generierung & 32s  & 183s   & 228s   \\ \hline
+TTL-2-N-Triples        & 358s & 3 766s & 7 567s \\ \hline
+gZip-Kompression       & 205s & 2 078s & 4 116s \\ \hline \hline
+\textbf{Gesamt}        & \textbf{664s} & \textbf{6 817s} & \textbf{13 477s} \\ \hline
+\end{tabular}
+\caption{Ausführungsdauer in Sekunden für die Generierung der RDF-Datenmenge.}
+\label{tab:data-generierung}
+\end{table}
+
+\begin{table}[h!]
+\small
+\centering
+\begin{tabular}{l|r|r|r}
+   & \multicolumn{1}{l}{\textbf{Skalierung 1}} & \multicolumn{1}{|l}{\textbf{Skalierung 10}} & \multicolumn{1}{|l}{\textbf{Skalierung 20}} \\ \hline \hline
+dsd.nt       &         111 &           111 &           111 \\ \hline
+Date.nt      &      46 008 &        46 008 &        46 008 \\ \hline
+Customer.nt  &     270 000 &     2 700 000 &     5 400 000 \\ \hline
+Part.nt      &   2 000 000 &     8 000 000 &    10 000 000 \\ \hline
+Supplier.nt  &      16 000 &       160 000 &       320 000 \\ \hline
+Lineorder.nt & 120 023 420 & 1 199 724 280 & 2 399 894 920 \\ \hline
+Levels.nt    &     717 351 &     3 381 351 &     4 941 351 \\ \hline \hline
+\textbf{Gesamt} & \textbf{123 072 890} & \textbf{1 214 011 750} & \textbf{2 420 602 390} \\ \hline
+\end{tabular}
+\caption{Anzahl Triples bei den Skalierungen S1, S10 und S20.}
+\label{tab:number-triples}
+\end{table}
+
+\begin{table}[h!]
+\small
+\centering
+\begin{tabular}{l|r|r|r}
+   & \multicolumn{1}{l}{\textbf{Skalierung 1}} & \multicolumn{1}{|l}{\textbf{Skalierung 10}} & \multicolumn{1}{|l}{\textbf{Skalierung 20}} \\ \hline \hline
+Date.nt      &      5 MB &       5 MB &       5 MB \\ \hline
+Customer.nt  &     29 MB &     295 MB &     591 MB \\ \hline
+Part.nt      &    211 MB &     849 MB &   1 100 MB \\ \hline
+Supplier.nt  &      2 MB &      18 MB &      35 MB \\ \hline
+Lineorder.nt & 16 300 MB & 167 000 MB & 330 000 MB \\ \hline
+Levels.nt    &    101 MB &     478 MB &     702 MB \\ \hline \hline
+\textbf{Gesamt} & \textbf{16 648 MB} & \textbf{168 645 MB} & \textbf{332 433 MB} \\ \hline
+\end{tabular}
+\caption{Größe der N-Triples-Dateien bei den Skalierungen S1, S10 und S20 in MB.}
+\label{tab:rdf-ntriples-size}
+\end{table}
+
+\newpage
+
+\section{Ausführung des ETL-Prozesses}
+\label{sec:eval-etl-process}
+
+In diesem Abschnitt wird die Ausführung des ETL-Prozesses untersucht. Vorab soll gezeigt werden, welche Auswirkungen die im Abschnitt \ref{subsub:hive-optimierungen} vorgestellten Optimierungen haben. Anschließend wird die Evaluation mit den Skalierungen S1, S10 und S20 sowie bei einer Clustergröße von 3, 6 und 9 DateNodes untersucht.
+
+\subsection{Auswirkungen der Optimierungen}
+
+Dieses Experiment soll zeigen, welche Auswirkungen die in Abschnitt \ref{subsub:hive-optimierungen} vorgestellten Optimierungen auf die Ausführungsdauer des ETL-Prozesses haben. Dabei wurde der ETL-Prozess mit und ohne Optimierungen auf einem Cluster mit 3 DataNodes und der Datenmenge S1 durchgeführt.
+
+Tabelle \ref{tab:rdf-2-hive-opt} listet die durchschnittlich benötigte Zeit in Sekunden für die Komponenten RDF-2-Hive, MDM-Loader und MDM-2-Star-Schema auf. Für die Ermittlung der Ausführungsdauer wurde der ETL-Prozess jeweils drei Mal ausgeführt.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{l|r|r|r|r}
+ & \multicolumn{1}{l}{\textbf{Ohne}} & \multicolumn{1}{|l}{\textbf{PARQUET}} & \multicolumn{1}{|l}{\textbf{Partition}} & \multicolumn{1}{|l}{\textbf{Kombination}} \\ \hline \hline
+QB\_Triples\_opt             &     - &  146s &  470s &  474s \\ \hline\hline
+MDM-Loader - Measures        &  289s &  196s &   12s &   13s \\ \hline
+MDM-Loader - Dimensions      &   94s &   62s &    1s &    1s \\ \hline
+MDM-Loader - Hierarchies     &   95s &   62s &    1s &    1s \\ \hline
+MDM-Loader - Levels          &  103s &   86s &   15s &   14s \\ \hline\hline
+MDM-2-StarSchema - Customer  &  309s &  266s &   53s &   52s \\ \hline
+MDM-2-StarSchema - Date      &  618s &  518s &  104s &  105s \\ \hline
+MDM-2-StarSchema - Part      &  311s &  273s &   58s &   59s \\ \hline
+MDM-2-StarSchema - Supplier  &  308s &  267s &   53s &   54s \\ \hline
+MDM-2-StarSchema - Lineorder &  306s &  200s &  182s &  162s \\ \hline\hline
+\textbf{Gesamt} & \textbf{2433s} & \textbf{2076s} & \textbf{949s} & \textbf{935s} \\ \hline
+\end{tabular}
+\caption{Ausführungsdauer der Komponenten in Sekunden bei Skalierung 1 und 3 \mbox{DataNodes} ohne Optimierungen, mit PARQUET, mit Partitionierung und mit beiden Optimierungen in Kombination.}
+\label{tab:rdf-2-hive-opt}
+\end{table}
+
+Die zwei Komponenten MDM-2-Mondrian und MDM-2-Apache-Kylin werden von diesen Optimierungen nicht beeinflusst. Die XML-Konfigurationsdatei für Mondrian wird anhand der ausgelesenen und im Java-Programm gespeicherten MDM-Informationen aus der zweiten Komponente MDM-Loader generiert. Wie in Abschnitt \ref{subsub:kylin-cube-build-process} erläutert, besteht der erste Schritt des Cube-Build-Prozesses von Apache Kylin darin, eine Intermediate Hive-Tabelle zu generieren. Die restlichen Berechnungen der Cuboids basieren entweder auf dieser Hive-Tabelle oder auf die zuvor berechneten Cuboids.
+
+Ohne Optimierungen wird keine Zeit für die Generierung der Hive-Tabelle \textit{QB\_Triples\_opt} benötigt, da die Daten direkt aus den N-Triples-Dateien im HDFS gelesen werden. Dies führt jedoch zu längeren Ausführungszeiten der HiveQL-Abfragen bei der Ermittlung des multidimensionalen Datenmodells (MDM) als auch bei der Generierung des Sternschemas in Hive. Erklärt wird dieses Verhalten durch die Anzahl der benötigten Mappers und Reducers. Hierbei muss bei jeder HiveQL-Abfrage die gesamte, unkomprimierte N-Triples-Datenmenge ausgelesen werden. Bei der Datenmenge S1 liegt die Anzahl der Mappers konstant bei 67, welche jeweils von den DataNodes abgearbeitet werden müssen.
+
+Wird dagegen PARQUET als Datenformat gewählt, muss die Hive-Tabelle \textit{QB\_Triples\_opt} anhand der External Hive-Table generiert werden. Einmalig werden dafür 67 Mappers benötigt. Diese Optimierung reduziert die Ausführungszeiten beim Auslesen des MDMs und die Generierung der Hive-Tabellen im Sternschema deutlich, da durch die Komprimierung der Daten durchschnittlich nur 34 Mappers benötigt werden. Im Ergebnis wird der ETL-Prozess um 357 Sekunden schneller ausgeführt.
+
+Die Ausfühungsdauer wird noch deutlicher verringert, wenn bei der Generierung der Tabelle \textit{QB\_Triples\_opt} nach der Spalte \textit{predicate} partitioniert wird. Zwar dauert die Generierung der optimierten Hive-Tabelle deutlich länger (470 Sekunden anstatt 146 Sekunden), jedoch wird die Ausführungszeit beim Auslesen des MDMs von insgesamt 406 Sekunden auf 29 Sekunden verringert. Grund hierfür ist das Auslesen der MDM-Informationen nach bestimmten Prädikaten, z.\,B. \textit{qb:measure} und \textit{qb:dimension}. Diese Informationen werden durch die Partitionierung in seperaten Ordner gespeichert, was beim Auslesen dazu führt, dass lediglich ein Mapper benötigt wird. Zusätzlich wird die Generierung des Sternschemas in Hive durch die Partitionierung von 1524 Sekunden auf 450 Sekunden verringert. Die Reduzierung der Ausführungsdauer wird dadurch erreicht, dass nur die Daten aus den Partitionsordnern ausgelesen werden müssen, die die benötigten Informationen enthalten (z.\,B. \textit{skos:member} und \textit{skos:narrower}). Insgesamt wird der ETL-Prozess durchschnittlich um 1128 Sekunden schneller ausgeführt.
+
+Werden die beiden vorgestellten Optimierungen kombiniert führt das Datenformat PARQUET bei der Generierung der Faktentabelle, bei der die größte Datenmenge verarbeitet werden muss, zu einer Reduzierung der Ausführungsdauer. Grund hierfür ist die Komprimierung der Datenmenge. Das Datenformat PARQUET reduziert auch in diesem Fall die Anzahl der benötigten Mappers bei der Generierung der Faktentabelle, was eine kürzere Ausführungsdauer von durchschnittlich 20 Sekunden zur Folge hat.
+
+Zusammenfassend hat die Untersuchung folgende Auswirkungen auf den ETL-Prozess ergeben:
+\begin{itemize}
+  \item Ohne Optimierungen benötigt der ETL-Prozess am Längsten. Grund hierfür ist die Anzahl der Mappers, die benötigt wird, um eine HiveQL-Abfrage zu beantworten.
+  \item Mit PARQUET als Datenformat wird die Ausführungsdauer des ETL-Prozesses um insgesamt 357 Sekunden reduziert.
+  \item Durch die Partitionierung nach der \textit{predicate}-Spalte wird der ETL-Prozess um 1485 Sekunden schneller als ohne Optimierungen und 1128 Sekunden schneller als mit dem Datenformat PARQUET ausgeführt.
+  \item Die Kombination der beiden Optimierungen weist bei der Generierung der Faktentabelle bereits bei S1 einen Unterschied von durchschnittlich 20 Sekunden auf.
+\end{itemize}
+
+Aus dieser Evaluation geht hervor, dass die kombinierte Optimierung zur kürzesten Ausführungsdauer des ETL-Prozesses führt. Aus diesem Grund wird bei allen weiteren Experimenten die kombinierte Optimierung angewendet.
+
+\subsection{Horizontale Speicherung der Datenmengen ins HDFS}
+Die Verteilung der komprimierten N-Triples-Dateien ins HDFS wurde bei der Datenmenge S1 durchschnittlich in 6 Sekunden durchgeführt. Bei S10 und S20 führten die Messungen zum Teil zu sehr unterschiedlichen Ergebnissen. Die horizontale Speicherung der Datenmenge S10 benötigte unabhängig der Anzahl an DataNodes zwischen 60 und 216 Sekunden. Die für die Datenmenge S20 benötigte Zeit für den Upload ins HDFS lag zwischen 116 und 181 Sekunden. Dies ist auf die Netzwerk-Auslastung des AWS bei der Durchführung der Experimente zurückzuführen. Ein eindeutiges Ergebnis konnte daher im Rahmen der Evaluation nicht ermittelt werden.
+\newpage
+
+\subsection{ETL-Prozess bei horizontaler Skalierung mit S1 und S10}
+
+In diesem Abschnitt wird die horizontale Skalierung mit 3, 6 und 9 DataNodes sowie mit der Datenmenge S1 und S10 untersucht. Gemessen wurden die Ausführungszeiten der Komponenten 1-4, da Komponente 5 (MDM-2-Mondrian) bei allen Experimenten durchschnittlich in 0,06 Sekunden ausgeführt wurde. Abbildung \ref{fig:etl_s1_sum} und \ref{fig:etl_s10_sum} zeigen bei S1 und S10 die gesamten Ausführungszeiten der einzelnen Komponenten bei unterschiedlichen Clustergrößen.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    ytick = {0,500,1000,1500},
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={RDF-2-Hive,MDM-Loader,MDM-2-StarSchema,MDM-2-Kylin},
+    xtick = data,
+    ymin = 0,
+    ymax = 1500,
+    ybar,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 474)
+      (MDM-Loader, 129)
+      (MDM-2-StarSchema, 481)
+      (MDM-2-Kylin, 1185)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 315)
+      (MDM-Loader, 94)
+      (MDM-2-StarSchema, 418)
+      (MDM-2-Kylin, 1175)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 199)
+      (MDM-Loader, 83)
+      (MDM-2-StarSchema, 400)
+      (MDM-2-Kylin, 1169)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der einzelnen Komponenten des ETL-Prozesses mit der Datenmenge S1 sowie 3, 6 und 9 DataNodes.}
+\label{fig:etl_s1_sum}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    ytick = {0,1000,2000,3000,4000},
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={RDF-2-Hive,MDM-Loader,MDM-2-StarSchema,MDM-2-Kylin},
+    xtick = data,
+    ymin = 0,
+    ymax = 4000,
+    ybar,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 3084)
+      (MDM-Loader, 2069)
+      (MDM-2-StarSchema, 2008)
+      (MDM-2-Kylin, 3928)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 1807)
+      (MDM-Loader, 1103)
+      (MDM-2-StarSchema, 1332)
+      (MDM-2-Kylin, 2845)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 1496)
+      (MDM-Loader, 746)
+      (MDM-2-StarSchema, 1066)
+      (MDM-2-Kylin, 2403)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der einzelnen Komponenten des ETL-Prozesses mit der Datenmenge S10 sowie 3, 6 und 9 DataNodes.}
+\label{fig:etl_s10_sum}
+\end{figure}
+
+\subsubsection{Evaluation der 1. Komponente RDF-2-Hive}
+
+Die horizontale Skalierung ist bei der Generierung der Hive-Tabelle \textit{QB\_Triples\_opt} deutlich erkennbar. Wie im vorangegangen Abschnitt erläutert, werden bei der Generierung der optimierten Hive-Tabelle mit Partition und PARQUET alle Triples aus den N-Triples-Dateien geladen. Infolgedessen reduziert das Hinzufügen von DataNodes die Ausführungsdauer der \textit{Create-Table-As-Select}-Abfrage. Eine größere Anzahl an DataNodes führt dazu, dass mehr Mappers und mehr Reducers parallel ausgeführt werden können.
+
+\subsubsection{Evaluation der 2. Komponente MDM-Loader}
+
+Wird bei der MDM-Loader-Komponente die horizontale Skalierung betrachtet, lässt sich eine Reduzierung der Laufzeit bei den Datenmengen S1 und S10 erkennen. Abbildungen \ref{fig:etl_s1_component_2} und \ref{fig:etl_s10_component_2} zeigen eine detailliertere Auflistung der Ausführungszeiten der MDM-Loader-Komponente zum Auslesen der Measures, Dimensionen, Hierachien, Levels und Attribute.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={Measures,Dimensions,Hierarchies,Levels,Attributes},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    ymode = log,
+    log origin=infty,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Measures, 14)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 98)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Measures, 13)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 16)
+      (Attributes, 65)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Measures, 15)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 51)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der zweiten Komponente MDM-Loader bei der Datenmenge S1 sowie 3, 6 und 9 DataNodes.}
+\label{fig:etl_s1_component_2}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={Measures,Dimensions,Hierarchies,Levels,Attributes},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    ymode = log,
+    log origin=infty,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Measures, 15)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 2037)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Measures, 12)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 1074)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Measures, 13)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 716)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der zweiten Komponente MDM-Loader bei der Datenmenge S10 sowie 3, 6 und 9 DataNodes.}
+\label{fig:etl_s10_component_2}
+\end{figure}
+
+Die horizontale Skalierung ist beim Auslesen der Measures und Levels nicht erkennbar. Aufgrund der Partitionierung werden die HiveQL-Abfragen sowohl bei der Datenmenge S1 als auch bei S10 in einem MapReduce-Job mit einem Mapper umgewandelt. Daher kann bei der verwendeten Datenmenge durch das Hinzufügen von DataNodes die Ausführungsdauer nicht reduziert werden. Ferner wird beim Auslesen der Dimensionen und Hierarchien kein MapReduce-Job generiert, da die benötigten Daten durch die Partitionierung direkt auslesen werden. Dagegen wird die HiveQL-Abfrage zum Auslesen der Attribute in einem MapReduce-Job mit vielen Mappern und Reducern umgewandelt. Infolgedessen hat die horizontale Skalierung einen Einfluss auf die Ausführungsdauer. Tabelle \ref{tab:mdm-loader} listet die durchschnittlichen Ausführungszeiten zum Auslesen der Attribute auf.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l|r|r|r}
+   & \multicolumn{1}{l}{\textbf{3 DataNodes}} & \multicolumn{1}{|l}{\textbf{6 DataNodes}} & \multicolumn{1}{|l}{\textbf{9 DataNodes}} \\ \hline \hline
+Skalierung 1  & 98s & 65s & 51s \\ \hline
+Skalierung 10 & 2037s & 1074s & 716s \\ \hline
+\end{tabular}
+\caption{Ausführungsdauer in Sekunden der MDM-Loader-Komponente zum Auslesen der Attribute.}
+\label{tab:mdm-loader}
+\end{table}
+
+Der MapReduce-Job bei S1 mit 3 DataNodes benötigt durchschnittlich 98 Sekunden, bei 6 DataNodes 65 Sekunden (33,7\% schneller) und bei 9 DataNodes 51 Sekunden (48,0\% schneller als mit 3 DataNodes und 21,5\% schneller als mit 6 DataNodes).
+
+Das Auslesen der Attribute bei der Datenmenge S10 benötigt mit 3 DataNodes durchschnittlich 2037 Sekunden, mit 6 DataNodes 1074 Sekunden (47,3\% schneller) und mit 9 DataNodes 716 Sekunden (64,9\% schneller als mit 3 DataNodes und 33,3\% schneller als mit 6 DataNodes). Die Verdopplung der DataNodes führt daher zu einer Halbierung der Ausführungsdauer. Ferner beträgt der Unterschied zwischen dem Cluster mit 6 und 9 DataNodes 33\%. Bei diesen Messungen ist die horizontale Skalierung sehr deutlich erkennbar.
+
+\subsubsection{Evaluation der 3. Komponente: MDM-2-StarSchema}
+
+Die Ausführungszeiten der dritten Komponenten MDM-2-StarSchema - die Generierung der Fakten- und Dimensionstabellen in Hive - sind für die Datenmenge S1 in Abbildung \ref{fig:etl_s1_component_3} und für die Datenmenge S10 in Abbildung \ref{fig:etl_s10_component_3} aufgelistet.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={Customers,Dates,Parts,Suppliers,Lineorders},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Customers, 69)
+      (Dates, 110)
+      (Parts, 81)
+      (Suppliers, 58)
+      (Lineorders, 163)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Customers, 67)
+      (Dates, 109)
+      (Parts, 81)
+      (Suppliers, 56)
+      (Lineorders, 105)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Customers, 67)
+      (Dates, 111)
+      (Parts, 81)
+      (Suppliers, 56)
+      (Lineorders, 85)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der dritten Komponente MDM-2-StarSchema bei der Datenmenge S1 sowie 3, 6 und 9 DataNodes.}
+\label{fig:etl_s1_component_3}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={Customers,Dates,Parts,Suppliers,Lineorders},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Customers, 101)
+      (Dates, 185)
+      (Parts, 148)
+      (Suppliers, 88)
+      (Lineorders, 1486)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Customers, 100)
+      (Dates, 183)
+      (Parts, 143)
+      (Suppliers, 82)
+      (Lineorders, 824)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Customers, 100)
+      (Dates, 185)
+      (Parts, 140)
+      (Suppliers, 81)
+      (Lineorders, 560)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der dritten Komponente MDM-2-StarSchema bei der Datenmenge S10 sowie 3, 6 und 9 DataNodes.}
+\label{fig:etl_s10_component_3}
+\end{figure}
+
+Analog zur Komponente MDM-Loader sind die Datenmengen S1 und S10 aufgrund der Partitionierung zu klein, um bei der Generierung der Dimensionstabellen einen Unterschied in den Ausführungszeiten mit 3, 6 und 9 DataNodes zu erkennen. Jedoch wird deutlich, dass bei der Generierung der Date-Tabelle mehr Zeit benötigt wird als bei den anderen Dimensionstabellen. Dies ist mittels der zwei Hierarchien innerhalb der Dimension zu erklären. Die Date-Tabelle wird in zwei Durchläufe generiert. In der ersten Phase wird die Tabelle mit den Attributen und den Levels der ersten Hierarchie erstellt. In der zweiten Phase werden die Spalten für die Levels der zweiten Hierarchie zur bestehenden Hive-Tabelle hinzugefügt.
+
+Des Weiteren ist erkennbar, dass die horizontale Skalierung bei der Generierung der Faktentabelle eine deutliche Reduzierung der Auführungszeit zur Folge hat. In diesem Fall können durch mehr DataNodes mehr Mappers und mehr Reducers parallel ausgeführt werden. Tabelle \ref{tab:mdm-2-ss} listet die durchschnittlichen Ausführungszeiten zum Auslesen der Attribute auf.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l|r|r|r}
+   & \multicolumn{1}{l}{\textbf{3 DataNodes}} & \multicolumn{1}{|l}{\textbf{6 DataNodes}} & \multicolumn{1}{|l}{\textbf{9 DataNodes}} \\ \hline \hline
+Skalierung 1  & 163s & 105s & 85s \\ \hline
+Skalierung 10 & 1486s & 824s & 560s \\ \hline
+\end{tabular}
+\caption{Ausführungsdauer in Sekunden der MDM-2-Kylin-Komponente zum Generieren der Faktentabelle.}
+\label{tab:mdm-2-ss}
+\end{table}
+
+Bei der Datenmenge S1 und 3 DataNodes werden 163 Sekunden, bei 6 DataNodes 105 Sekunden (35,6\% schneller) und bei 9 DataNodes 85 Sekunden (47,9\% schneller als bei 3 DataNodes und 19,0\% schneller als bei 6 DataNodes) benötigt. Im Hinblick auf die Datenmenge S10 werden bei 3 DataNodes 1486 Sekunden, bei 6 DataNodes 824 Sekunden (44,5\% schneller) und bei 9 DataNodes 560 Sekunden (62,3\% schneller als mit 3 DataNodes und 32,0\% als mit 6 DataNodes) benötigt. In beiden Fällen ist die horizontale Skalierung und die damit verbundene Reduzierung der Ausführungszeiten erkennbar.
+
+
+\subsubsection{Evaluation der 4. Komponente: MDM-2-Kylin}
+
+Der Cube-Build-Prozess in Apache Kylin (Komponente 4) wird durch die horizontale Skalierung der Datenmenge S1 nicht beeinflusst (s. Abbildung \ref{fig:etl_s1_sum}). Bei 3 DataNodes benötigt der Prozess 1185 Sekunden, bei 6 DataNodes 1175 Sekunden und bei 9 DataNodes 1169 Sekunden. Dieses Verhalten lässt sich dadurch erklären, dass die Datenmenge S1 nicht ausreicht, um eine kürzere Ausführungsdauer durch das Hinzufügen von DataNodes zu erreichen. Der Cube-Build-Prozess berechnet in allen Experimenten 14 verschiedene Cuboids. Bei S1 werden für diese Vorberechnungen im Durchschnitt 1 Mapper und 1 Reducer benötigt. Die horizontale Skalierung hat daher bei dieser Datenmenge keinen Einfluss auf die Ausführungsdauer des Cube-Build-Prozesses in Kylin.
+
+Dagegen ist die horizontale Skalierung der Datenmenge S10 in der Komponente MDM-2-Kylin erkennbar (s. Abbildung \ref{fig:etl_s10_sum}). Der Cube-Build-Prozess benötigt bei 3 DataNodes durchschnittlich 3928 Sekunden, bei 6 DataNodes 2845 Sekunden (27,6\% schneller) und bei 9 DataNodes 2403 Sekunden (38,8\% schneller als mit 3 DataNodes und 15,5\% schneller als mit 6 DataNodes). Eine Verdopplung der DataNodes von 3 auf 6 führt zwar zu einer Reduzierung der Ausführungsdauer, jedoch nicht um die erwarteten 50\%. Dieses Verhalten wird folgendermaßen erklärt:
+
+\begin{itemize}
+  \item Das Hinzufügen von DataNodes hat zunächst eine Auswirkung auf den Cube-Build-Prozess. Zu Beginn werden viele Mappers und Reducers benötigt, um die großen Cuboids des OLAP Cubes zu berechnen. Je weiter der Prozess voranschreitet, desto kleiner werden die Cuboids. Dies führt zu einer geringeren Anzahl an Mappern und Reducern. Ab einem gewissen Zeitpunkt hat die Anzahl der DataNodes auf die Berechnungszeit keine messbare Auswirkung mehr, da weniger Mapper für die Berechnungen benötigt werden, als DataNodes im Cluster vorhanden sind.
+  \item Der letzte Schritt des Cube-Build-Prozesses - die Generierung der HFile für den Bulk-Import in die HBase-Datenkbank - wird bei der Datenmenge S10 mithilfe von drei Mappern generiert. In der Evaluation beanspruchte dieser Schritt im Durchschnitt 30\% des Cube-Build-Prozesses. Durch die geringe Anzahl an Mappern hat die Erhöhung der DataNodes jedoch keinen Einfluss auf die Ausführungsdauer der HFile-Generierung.
+\end{itemize}
+
+\subsection{ETL-Prozess bei horizontaler Skalierung mit S20}
+In diesem Abschnitt wird der ETL-Prozess bei der Datenmenge S20 und 9 DataNodes untersucht. Zum Vergleich werden die Datenmengen S1 und S10 bei 9 DataNodes herangezogen.
+
+Analog zur den Datenmengen S1 und S10 wurden die Ausführungszeiten der Komponenten 1-4 gemessen. Abbildung \ref{fig:etl_s20_sum} zeigt die Ausführungsdauer der einzelnen Komponenten im Vergleich zu den Datenmengen S1 und S10 bei einem Cluster mit 9 DataNodes.
+
+Die Durchführung der RDF-2-Hive- und MDM-Loader-Komponente benötigt bei doppelter Datenmenge und gleicher Anzahl an DataNodes doppelt so viel Zeit.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={RDF-2-Hive,MDM-Loader,MDM-2-StarSchema,MDM-2-Kylin},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 199)
+      (MDM-Loader, 83)
+      (MDM-2-StarSchema, 400)
+      (MDM-2-Kylin, 1169)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 1496)
+      (MDM-Loader, 746)
+      (MDM-2-StarSchema, 1066)
+      (MDM-2-Kylin, 2403)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (RDF-2-Hive, 3161)
+      (MDM-Loader, 1502)
+      (MDM-2-StarSchema, 1683)
+      (MDM-2-Kylin, 3481)
+    };
+
+    \legend{9DataNodes (S1), 9 DataNodes (S10),9 DataNodes (S20)}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der einzelnen Komponente des ETL-Prozesses bei S1, S10 und S20 mit 9 DataNodes.}
+\label{fig:etl_s20_sum}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={Measures,Dimensions,Hierarchies,Levels,Attributes},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    ymode = log,
+    log origin=infty,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Measures, 15)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 51)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Measures, 13)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 716)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Measures, 13)
+      (Dimensions, 0.1)
+      (Hierarchies, 0.1)
+      (Levels, 17)
+      (Attributes, 1472)
+    };
+
+    \legend{9DataNodes (S1), 9 DataNodes (S10),9 DataNodes (S20)}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der zweiten Komponente MDM-Loader bei S1, S10 und S20 sowie 9 DataNodes.}
+\label{fig:etl_s20_component_2}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 6cm,
+    major x tick style = transparent,
+    ymajorgrids = true,
+    ylabel = {Ausführungszeit [s]},
+    grid style=dashed,
+    y tick label style={
+      /pgf/number format/fixed,
+      /pgf/number format/use comma,
+      /pgf/number format/1000 sep = { }
+    },
+    symbolic x coords={Customers,Dates,Parts,Suppliers,Lineorders},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=-1,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    log ticks with fixed point
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Customers, 67)
+      (Dates, 111)
+      (Parts, 81)
+      (Suppliers, 56)
+      (Lineorders, 85)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Customers, 100)
+      (Dates, 185)
+      (Parts, 140)
+      (Suppliers, 81)
+      (Lineorders, 560)
+    };
+
+    \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Customers, 128)
+      (Dates, 184)
+      (Parts, 146)
+      (Suppliers, 91)
+      (Lineorders, 1134)
+    };
+
+    \legend{9DataNodes (S1), 9 DataNodes (S10),9 DataNodes (S20)}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der dritten Komponente MDM-2-StarSchema bei S1, S10 und S20 sowie 9 DataNodes.}
+\label{fig:etl_s20_component_3}
+\end{figure}
+
+Abbildung \ref{fig:etl_s20_component_2} zeigt die Ausführungsdauer der MDM-Loader-Komponente. Erneut ist erkennbar, dass die Ausführungsdauer der MDM-Loader-Komponente beim Auslesen der Measures, Dimensionen, Hierarchien und Levels bei allen Datenmengen konstant bleibt. Grund hierfür ist die Partitionierung nach der \textit{predicate}-Spalte.
+
+Das Auslesen der Attribute bei gleichbleibender Anzahl an DataNodes führt bei doppelter Datenmenge auch zur doppelten Ausführungsdauer. Bei S1 werden 51 Sekunden, bei S10 716 Sekunden und bei S20 1472 Sekunden benötigt. Der Unterschied zwischen S1 und S10 ist jedoch weit größer als das 10-fache. Begründet wird dieses Verhalten durch die Anzahl der Mappers und Reducers. Zudem werden die Mappers bei S1 schneller ausgeführt, da sie weniger Daten in den jeweiligen Partitionsordnern verarbeiten müssen.
+
+Abbildung \ref{fig:etl_s20_component_3} zeigt die Ausführungsdauer der MDM-2-StarSchema-Komponete bei S1, S10 und S20 mit 9 DataNodes. Die Generierung des Sternschemas mit 9 DataNodes wurde bei der Datenmenge S1 in 400 Sekunden, bei S10 in 1066 Sekunden und bei S20 in 1683 Sekunden abgeschlossen. Erkennbar ist eine leichte Erhöhung der Ausführungsdauer bei der Generierung der Dimensionstabellen. Bei 9 DataNodes benötigt die Generierung der Faktentabelle bei doppelter Datenmenge wiederum doppelt so viel Zeit. Bei der Datenmenge S10 wurden 560 Sekunden und bei S20 1134 Sekunden gemessen.
+
+\subsection{Vergleich des ETL-Prozesses mit MySQL und Open Virtuoso}
+\label{sub:etl-vergleich}
+
+Zum Vergleich des hier vorgestellten ETL-Prozesses wird die relationale Datenbank MySQL (Version 5.6.28) sowie der RDF Store Open Virtuoso (Version 7.2.1) herangezogen. Die Experimente wurden auf einer AWS-Instanz vom Typ \textit{m4.xlarge} durchgeführt.
+
+Bei der Evaluation der MySQL-Datenbank wurden die Konfigurationswerte analog zu Listing \ref{list:mysql_config} angepasst. Des Weiteren wurde der MySQL-Cache deaktiviert, um unabhängige Ergebnisse bei der Evaluation der Abfragen zu erreichen (s. Abschnitt \ref{sub:mysql_ov_queries}). Bei der Konfiguration von Open Virtuoso wurde eine hohe Speicherplatzuweisung festgelegt. Die verwendete Konfiguration ist in Listing \ref{list:ov_config} dargestellt.
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=bash,caption={Die verwendete MySQL-Konfiguration bei der Evaluation.},label=list:mysql_config]
+key_buffer         = 32M
+max_allowed_packet = 16M
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\linewidth}\hfill
+\begin{lstlisting}[language=bash,caption={Die bei der Evaluation verwendete Konfiguration von Open Virtuoso.},label=list:ov_config]
+MaxQueryMem     = 8G
+NumberOfBuffers = 1105000
+MaxDirtyBuffers = 812500
+\end{lstlisting}
+\end{minipage}
+
+Abbildung \ref{fig:etl_compare} zeigt die gemessene Ausführungsdauer für den Import der unterschiedlichen Datenmengen S1, S10 und S20 in die MySQL-Datenbank sowie in den RDF Store Open Virtuoso. Zudem ist hierin die gesamte Ausführungsdauer der durchgeführten ETL-Durchgänge abgebildet.
+
+\definecolor{sj1}{RGB}{228,26,28}
+\definecolor{sj2}{RGB}{55,126,184}
+\definecolor{sj3}{RGB}{77,175,74}
+\definecolor{sj4}{RGB}{152,78,163}
+\definecolor{sj5}{RGB}{255,127,0}
+\definecolor{sj6}{RGB}{255,255,51}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [s]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    symbolic x coords={Skalierung 1,Skalierung 10,Skalierung 20},
+    xtick = data,
+    ymin = 0,
+    ymax = 20000,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    }
+  ]
+
+  \addplot[mark=*, color=sj1]
+    coordinates {
+      (Skalierung 1, 22)
+      (Skalierung 10, 421)
+      (Skalierung 20, 941)
+    };
+
+  \addplot[mark=square*, color=sj2]
+    coordinates {
+      (Skalierung 1, 662)
+      (Skalierung 10, 8520)
+      (Skalierung 20, 18328)
+    };
+
+  \addplot[mark=triangle*, color=sj3]
+  coordinates {
+    (Skalierung 1, 2270)
+    (Skalierung 10, 11089)
+  };
+
+  \addplot[mark=diamond*, color=sj4]
+  coordinates {
+    (Skalierung 1, 2002)
+    (Skalierung 10, 7087)
+  };
+
+  \addplot[mark=pentagon*, color=sj5]
+  coordinates {
+    (Skalierung 1, 1851)
+    (Skalierung 10, 5711)
+    (Skalierung 20, 9827)
+  };
+
+    \legend{MySQL,Open Virtuoso,ETL 3 DataNodes,ETL 6 DataNodes, ETL 9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der dritten Komponente MDM-2-StarSchema bei S1, S10 und S20 sowie 9 DataNodes.}
+\label{fig:etl_compare}
+\end{figure}
+
+Es zeigt sich, dass der Import der TBL-Daten in die MySQL-Datenbank bei allen Skalierungen deutlich schneller durchgeführt wird. Außerdem benötigt der ETL-Prozess mit 3 DataNodes und der Datenmenge S1 und S10 länger als der Bulk-Import der gleichen Datenmenge in den RDF Store Open Virtuoso.
+
+Zwar benötigt der ETL-Prozess bei der Datenmenge S1 mehr Zeit, jedoch ändert sich dies bereits bei der Datenmenge S10. Hier wird eine schnellere Ausführung durch die horizontale Skalierung erzielt.
+
+Zusammenfassend bringt der hier vorgestellte ETL-Prozess bei einer kleinen Datenmenge keinen Vorteil gegenüber nicht horizontal skalierenden Systemen. Jedoch hat die horizontale Skalierung bei größeren Datenmengen einen Vorteil gegenüber den in dieser Arbeit verwendeten RDF Store Open Virtuoso.
+
+\section{Ausführung analytischer Abfragen}
+\label{sec:eval-olap-queries}
+
+In diesem Abschnitt werden die Antwortzeiten der analyitschen Abfragen des Star Schema Benchmarks (SSB) evaluiert. Der Benchmark stellt 13 verschiedene SQL-Abfragen Q1 - Q13 zur Evaluation bereit. In der vorangegangenen Arbeit von Kämpgen und Harth wurden äquivalente SPARQL- und MDX-Abfragen definiert (vgl. \cite{NoSize} und die dazugehörige Projektseite\footnote{ s. Projektseite unter \url{http://people.aifb.kit.edu/bka/ssb-benchmark/}.}). Diese Abfragen werden in den Folgenden Abschnitten auf ihre Antwortzeiten bei unterschiedlichen Clustergrößen hin untersucht.
+
+Bei der Evaluation der analytischen Abfragen wurde zunächst der Mondrian-Cache deaktiviert und zwei Warm-up-Durchgänge durchgeführt. Anschließend wurden die Abfragen Q1 - Q13 mit unterschiedlicher Anzahl an DataNodes jeweils drei Mal ausgeführt.
+
+\subsection{Evaluation der analytischen Abfragen mit S1}
+
+Abbildung \ref{fig:ana_mdx_s1} zeigt die Antwortzeiten der analytischen MDX-Abfragen in Millisekunden bei der Datenmenge S1 und einer Clustergröße von 3, 6 und 9 DataNodes. Analog führt Abbildung \ref{fig:ana_sql_s1} die Ausführungszeiten der äquivalenten SQL-Abfragen auf.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [ms]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    ytick={0,1000,2000,3000,4000,5000,6000},
+    symbolic x coords={Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13},
+    xtick = data,
+    ymin = 0,
+    ymax = 6000,
+    ybar,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    },
+    bar width=4pt
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Q1, 1366)
+      (Q2, 1377)
+      (Q3, 1492)
+      (Q4, 2118)
+      (Q5, 5716)
+      (Q6, 1919)
+      (Q7, 2417)
+      (Q8, 2436)
+      (Q9, 2921)
+      (Q10, 1900)
+      (Q11, 2806)
+      (Q12, 2289)
+      (Q13, 2750)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Q1, 1372)
+      (Q2, 1372)
+      (Q3, 1509)
+      (Q4, 2123)
+      (Q5, 5749)
+      (Q6, 1930)
+      (Q7, 2434)
+      (Q8, 2428)
+      (Q9, 2927)
+      (Q10, 1874)
+      (Q11, 2793)
+      (Q12, 2273)
+      (Q13, 2733)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Q1, 1274)
+      (Q2, 1258)
+      (Q3, 1525)
+      (Q4, 2006)
+      (Q5, 5640)
+      (Q6, 1813)
+      (Q7, 1417)
+      (Q8, 1455)
+      (Q9, 1938)
+      (Q10, 1745)
+      (Q11, 2696)
+      (Q12, 2005)
+      (Q13, 2496)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der analytischen MDX-Abfragen bei der Datenmenge S1.}
+\label{fig:ana_mdx_s1}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [ms]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    symbolic x coords={Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13},
+    xtick = data,
+    ymin = 0,
+    ybar,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    },
+    bar width=4pt
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Q1, 187)
+      (Q2, 197)
+      (Q3, 193)
+      (Q4, 1255)
+      (Q5, 107)
+      (Q6, 869)
+      (Q7, 108)
+      (Q8, 1178)
+      (Q9, 908)
+      (Q10, 917)
+      (Q11, 107)
+      (Q12, 107)
+      (Q13, 1271)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Q1, 182)
+      (Q2, 195)
+      (Q3, 191)
+      (Q4, 1260)
+      (Q5, 107)
+      (Q6, 855)
+      (Q7, 108)
+      (Q8, 1197)
+      (Q9, 918)
+      (Q10, 912)
+      (Q11, 107)
+      (Q12, 108)
+      (Q13, 1251)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Q1, 183)
+      (Q2, 191)
+      (Q3, 194)
+      (Q4, 1261)
+      (Q5, 110)
+      (Q6, 882)
+      (Q7, 109)
+      (Q8, 1166)
+      (Q9, 942)
+      (Q10, 914)
+      (Q11, 107)
+      (Q12, 108)
+      (Q13, 1225)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der analytischen SQL-Abfragen bei der Datenmenge S1.}
+\label{fig:ana_sql_s1}
+\end{figure}
+
+Zu erkennen ist, dass die horizontale Skalierung bei der Datenmenge S1 die Antwortzeiten nur weniger MDX-Abfragen beeinflusst. Bei den äquivalenten SQL-Abfragen ist die horizontale Skalierung nicht messbar. Dies wird durch die Größe des OLAP Cubes in Kylin begründet. Bei der Datenmenge S1 wird ein OLAP Cube mit der Größe von 4,34 GB erstellt. Eine HBase-Region in Kylin hat jedoch die Größe von 10 GB. Infolgedessen wird bei dieser Datenmenge der OLAP Cube nur auf einem RegionServer gespeichert. Bei einer Abfrage muss folglich die gesamte Datenmenge aus dem RegionServer gelesen werden. Eine horizontale Skalierung hat aus diesem Grund keine Auswirkung.
+
+Auffällig sind die Unterschiede in der Ausführungsdauer der MDX- und SQL-Abfragen. Bei Kylin liefern 10 der 13 SQL-Abfragen in weniger als einer Sekunde ein Ergebnis zurück. Im Gegensatz dazu wird bereits bei der Datenmenge S1 keine MDX-Abfrage unter einer Sekunde beantwortet. Dieses Verhalten wird wiefolgt erklärt:
+
+\begin{itemize}
+  \item Generell ist die Transformation einer MDX-Abfrage in ein SQL-Statement in Mondrian mit einer zeitlichen Latenz verbunden.
+  \item In der Regel wird zur Beantwortung einer MDX-Abfrage das Statement in mehrere SQL-Abfragen umgewandelt. Die generierten SQL-Abfragen werden an Kylin gesendet und nacheinander ausgeführt. Dies führt letztendlich zu einer deutlich längeren Antwortzeit einer einzelnen MDX-Abfrage im Vergleich zu den äquivalenten SQL-Statements.
+\end{itemize}
+
+\subsection{Evaluation der analytischen Abfragen mit S10}
+
+Abbildung \ref{fig:ana_mdx_s10} stellt die Antwortzeiten der analytischen MDX-Abfragen in Millisekunden bei der Datenmenge S10 und einer Clustergröße mit 3, 6 und 9 DataNodes dar. Analog führt Abbildung \ref{fig:ana_sql_s10} die Ausführungszeiten der äquivalenten SQL-Abfragen auf.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [ms]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    ytick={0,2500,5000,7500,10000,12500,15000},
+    symbolic x coords={Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13},
+    xtick = data,
+    ymin = 0,
+    ymax = 15000,
+    ybar,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    },
+    bar width=4pt
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Q1, 1750)
+      (Q2, 1804)
+      (Q3, 2003)
+      (Q4, 4749)
+      (Q5, 14096)
+      (Q6, 2601)
+      (Q7, 3929)
+      (Q8, 4229)
+      (Q9, 3840)
+      (Q10, 2423)
+      (Q11, 6238)
+      (Q12, 4633)
+      (Q13, 5922)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Q1, 1482)
+      (Q2, 1389)
+      (Q3, 1619)
+      (Q4, 4223)
+      (Q5, 11224)
+      (Q6, 2110)
+      (Q7, 3586)
+      (Q8, 3446)
+      (Q9, 2837)
+      (Q10, 1733)
+      (Q11, 5927)
+      (Q12, 4176)
+      (Q13, 5372)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Q1, 1402)
+      (Q2, 1382)
+      (Q3, 1580)
+      (Q4, 4164)
+      (Q5, 10976)
+      (Q6, 2100)
+      (Q7, 3348)
+      (Q8, 3314)
+      (Q9, 2648)
+      (Q10, 1762)
+      (Q11, 5316)
+      (Q12, 4121)
+      (Q13, 5118)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der analytischen MDX-Abfragen bei der Datenmenge S10.}
+\label{fig:ana_mdx_s10}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [ms]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    ytick={0,200,400,600,800,1000,1200},
+    symbolic x coords={Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13},
+    xtick = data,
+    ymin = 0,
+    ymax = 1200,
+    ybar,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    },
+    bar width=4pt
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Q1, 195)
+      (Q2, 231)
+      (Q3, 222)
+      (Q4, 249)
+      (Q5, 154)
+      (Q6, 231)
+      (Q7, 246)
+      (Q8, 477)
+      (Q9, 140)
+      (Q10, 154)
+      (Q11, 145)
+      (Q12, 165)
+      (Q13, 501)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Q1, 154)
+      (Q2, 173)
+      (Q3, 161)
+      (Q4, 107)
+      (Q5, 106)
+      (Q6, 106)
+      (Q7, 106)
+      (Q8, 109)
+      (Q9, 107)
+      (Q10, 113)
+      (Q11, 112)
+      (Q12, 106)
+      (Q13, 110)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Q1, 226)
+      (Q2, 214)
+      (Q3, 199)
+      (Q4, 112)
+      (Q5, 113)
+      (Q6, 106)
+      (Q7, 108)
+      (Q8, 111)
+      (Q9, 108)
+      (Q10, 107)
+      (Q11, 107)
+      (Q12, 108)
+      (Q13, 112)
+    };
+
+    \legend{3 DataNodes,6 DataNodes,9 DataNodes}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der analytischen SQL-Abfragen bei der Datenmenge S10.}
+\label{fig:ana_sql_s10}
+\end{figure}
+
+Ähnlich zur Datenmenge S1 benötigt die MDX-Abfrage Q5 am Längsten. Zudem hat die horizontale Skalierung bei fast allen Abfragen einen messbaren Effekt auf die Ausführungszeiten zur Folge, z.\,B. liefert die Abfrage Q5 mit 3 DataNodes in 14,1 Sekunden, bei 6 DataNodes in 11,2 Sekunden und bei 9 DataNodes in 10,9 Sekunden ein Ergebnis zurück.
+
+Die horizontale Skalierung führt auch bei den äquivalenten SQL-Abfragen zu einer Reduzierung der Ausführungszeiten. Bei der Evaluation wurden die Abfragen Q1, Q2 und Q3 mit 9 DataNodes zwar etwas langsamer ausgeführt, jedoch wird dies durch die generell sehr kurzen Antwortzeiten dieser Abfragen begründet. Sie unterscheiden sich um 30 Millisekunden.
+
+Bei den SQL-Abfragen Q4, Q6, Q7, Q8 und Q13 liefert das Cluster mit 6 DataNodes in einer kürzeren Zeitspanne das Ergebnis zurück. Der OLAP Cube in Kylin hat bei der Datenmenge S10 eine Größe von 39,9 GB. Dadurch werden vier Regionen in HBase benötigt und über das Cluster horizontal verteilt. Bei 6 DataNodes können daher alle Regionen unabhängig voneinander auf verschiedenen DataNodes geladen werden.
+
+Weiter fällt auf, dass alle Antwortzeiten der SQL-Abfragen bei der Datenmenge S10 unter 0,6 Sekunden liegen. Dieses Verhalten wird durch die Anzahl der Regionen in HBase begründet. Bei der Datenmenge S1 wurde für den OLAP Cube nur eine Region erstellt. Dies führt dazu, dass die gesamte Datenmenge, die sortiert in der Region gespeichert wurde, geladen werden muss. Eine parallele Ausführung findet in diesem Fall nicht statt. Bei der Datenmenge S10 werden vier Regionen für die Speicherung des OLAP Cubes benötigt. Während der Abfragen werden hierbei die Daten parallel verarbeitet.
+
+\subsection{Evaluation der analytischen Abfragen mit S20}
+
+In diesem Abschnitt werden die 13 MDX- und SQL-Abfragen bei der Datenmenge S20 und 9 DataNodes evaluiert. Abbildung \ref{fig:ana_mdx_s20} führt die gemessenen Antwortzeiten der MDX-Abfragen im Vergleich zu den Datenmengen S1 und S10 auf. Analog werden in Abbildung \ref{fig:ana_sql_s20} die Ausführungszeiten der SQL-Abfragen aufgelistet.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [ms]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    ytick={0,2000,4000,6000,8000,10000,12000},
+    symbolic x coords={Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13},
+    xtick = data,
+    ymin = 0,
+    ymax = 12000,
+    ybar,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    },
+    bar width=4pt
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Q1, 1274)
+      (Q2, 1258)
+      (Q3, 1525)
+      (Q4, 2006)
+      (Q5, 5640)
+      (Q6, 1813)
+      (Q7, 1417)
+      (Q8, 1455)
+      (Q9, 1938)
+      (Q10, 1745)
+      (Q11, 2696)
+      (Q12, 2005)
+      (Q13, 2496)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Q1, 1402)
+      (Q2, 1382)
+      (Q3, 1580)
+      (Q4, 4164)
+      (Q5, 10976)
+      (Q6, 2100)
+      (Q7, 3348)
+      (Q8, 3314)
+      (Q9, 2648)
+      (Q10, 1762)
+      (Q11, 5316)
+      (Q12, 4121)
+      (Q13, 5118)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Q1, 1994)
+      (Q2, 1880)
+      (Q3, 1982)
+      (Q4, 4871)
+      (Q5, 4628)
+      (Q6, 1515)
+      (Q7, 6463)
+      (Q8, 6383)
+      (Q9, 5371)
+      (Q10, 3889)
+      (Q11, 10230)
+      (Q12, 0)
+      (Q13, 0)
+    };
+
+    \legend{9 DataNodes (S1),9 DataNodes (S10),9 DataNodes (S20)}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der analytischen MDX-Abfragen bei 9 DataNodes sowie Datenmenge S1, S10 und S20.}
+\label{fig:ana_mdx_s20}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width = 1*\textwidth,
+    height = 7cm,
+    major x tick style = transparent,
+    ylabel = {Ausführungszeit [ms]},
+    y label style={at={(axis description cs:0,0.5)},anchor=south},
+    ytick={0,200,400,600,800,1000,1200,1400},
+    symbolic x coords={Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13},
+    xtick = data,
+    ymin = 0,
+    ymax = 1400,
+    ybar,
+    ylabel near ticks,
+    xlabel near ticks,
+    scaled ticks=false,
+    ymajorgrids=true,
+    grid style=dashed,
+    legend cell align=left,
+    legend style={
+      at={(1,1)},
+      anchor=south east,
+      legend columns=3,
+      draw=none,
+      /tikz/every even column/.append style={column sep=0.5cm}
+    },
+    y tick label style={ /pgf/number format/fixed,
+    /pgf/number format/use comma,
+    /pgf/number format/1000 sep = { }
+    },
+    bar width=4pt
+  ]
+
+  \addplot[style={Set1-6-1,fill=Set1-6-1,mark=none}]
+    coordinates {
+      (Q1, 183)
+      (Q2, 191)
+      (Q3, 194)
+      (Q4, 1261)
+      (Q5, 110)
+      (Q6, 882)
+      (Q7, 109)
+      (Q8, 1166)
+      (Q9, 942)
+      (Q10, 914)
+      (Q11, 107)
+      (Q12, 108)
+      (Q13, 1225)
+    };
+
+  \addplot[style={Set1-6-2,fill=Set1-6-2,mark=none}]
+    coordinates {
+      (Q1, 226)
+      (Q2, 214)
+      (Q3, 199)
+      (Q4, 112)
+      (Q5, 113)
+      (Q6, 106)
+      (Q7, 108)
+      (Q8, 111)
+      (Q9, 108)
+      (Q10, 107)
+      (Q11, 107)
+      (Q12, 108)
+      (Q13, 112)
+    };
+
+  \addplot[style={Set1-6-3,fill=Set1-6-3,mark=none}]
+    coordinates {
+      (Q1, 234)
+      (Q2, 265)
+      (Q3, 241)
+      (Q4, 263)
+      (Q5, 153)
+      (Q6, 146)
+      (Q7, 215)
+      (Q8, 482)
+      (Q9, 159)
+      (Q10, 145)
+      (Q11, 143)
+      (Q12, 200)
+      (Q13, 608)
+    };
+
+    \legend{9 DataNodes (S1),9 DataNodes (S10),9 DataNodes (S20)}
+  \end{axis}
+\end{tikzpicture}
+\caption{Ausführungsdauer der analytischen SQL-Abfragen bei 9 DataNodes sowie Datenmenge S1, S10 und S20.}
+\label{fig:ana_sql_s20}
+\end{figure}
+
+Für die Evalaution wurde im Vorfeld erwartet, dass die Ausführungszeiten der Abfragen bei gleichbleibender Anzahl der DataNodes, jedoch größer werdender Datenmenge zunehmen werden. Dieses Verhalten trat bei allen MDX-Abfragen bis auf Q5 und Q6 ein.
+
+Des Weiteren wurden die Abfragen Q12 und Q13 nicht erfolgreich ausgeführt. Apache Kylin bricht nach 600 Sekunden die Ausführung der Abfrage ab. Dieser Schwellwert konnte während der Evaluation nicht erhöht werden. Zudem zeigte die Analyse der Fehlermeldung, dass Mondrian die Abfragen Q12 und Q13 in SQL-Abfragen umwandelt, die in der WHERE-Bedingung eine IN-Anweisung enthalten. Eigene Recherchen hierzu haben ergeben, dass Kylin zum Zeitpunkt der Evaluation solche SQL-Abfragen nicht effizient ausführen kann.
+
+Werden die äquivalenten SQL-Abfragen in Abbildung \ref{fig:ana_sql_s20} betrachtet, wird deutlich, dass die SQL-Abfragen schneller als die MDX-Abfragen ausgeführt werden. Einzig die Abfragen Q4, Q8 und Q13 der Datenmenge S1 benötigen knapp über eine Sekunde. Durch die zu geringe Datenmenge S1 wird der gesamte OLAP Cube (Größe: 4,34 GB) in einer HBase-Region gespeichert. Die horizontale Skalierung hat hierbei keinen Einfluss auf die Antwortzeiten. Bei der Datenmenge S10 beträgt die Größe des OLAP Cubes 39,9 GB (4 Regionen) und bei S20 bereits 79,4 GB (8 Regionen). In der Folge können durch das Hinzufügen von DataNodes die Antwortzeiten reduziert werden. Aus diesem Grund benötigten die SQL-Abfragen bei doppelter Datenmenge S20 nicht doppelt so lang in der Ausführung. Ausnahmen bilden hier die Abfragen Q8 und Q13, bei denen die Ausführungsdauer länger war. Die Ursache für dieses Verhalten konnte im Rahmen der Evaluation jedoch nicht ermittelt werden.
+
+\subsection{Evaluation mit aktiviertem Mondrian-Cache}
+\label{sub:eval_mondrian_cache}
+
+In den bisherigen Messungen wurde der Mondrian-Cache bewusst deaktiviert, um die horizontale Skalierung von Apache Kylin untersuchen zu können. Vor der Evaluation mit aktiviertem Mondrian-Cache bestanden folgende Annahmen:
+\begin{itemize}
+  \item Die Antwortzeiten der MDX-Abfragen sollten messbar kürzer sein als ohne Mondrian-Cache.
+  \item Ab einer gewissen Datenmenge sollte der Mondrian-Cache - aufgrund der begrenzten Cache-Größe - die benötigten Daten in Kylin anfragen. Dessen ungeachtet sollten die MDX-Abfragen bei größerer Datenmenge weiterhin schneller ausgeführt werden als ohne Mondrian-Cache.
+\end{itemize}
+
+Die Evaluation mit aktiviertem Mondrian-Cache führte zu folgendem Ergebnis:
+\begin{itemize}
+  \item Nach einer ersten Warm-Up-Phase wurden die Daten zur Beantwortung der 13 MDX-Abfragen direkt aus dem Mondrian-Cache gelesen. Dabei wurden alle MDX-Abfragen in durchschnittlich 56ms beantwortet.
+  \item Auch bei der Datenmenge S20 wurden die Daten aus dem Mondrian-Cache geladen. Im Rahmen der Evaluation konnte bei keiner Datenmenge die Begrenzung des Mondrian-Caches erreicht werden.
+\end{itemize}
+
+Infolgedessen führt der erste Aufruf einer MDX-Abfrage zu den in den vorherigen Abschnitten aufgelisteten Antwortzeiten. Eine erneute Ausführung der MDX-Abfrage führt dazu, dass das Ergebnis direkt aus dem Cache in wenigen Millisekunden geladen werden.
+
+In der Praxis ist die Anzahl der Abfragen jedoch nicht auf 13 Stück begrenzt. Aus diesem Grund kann zwar der Mondrian-Cache einen Vorteil bieten, jedoch gilt es zu überprüfen, bei welcher Datenmenge und bei welcher Anzahl an Anfragen der Mondrian-Cache die benötigten Informationen aus Kylin nachladen muss. %Dies konnte jedoch im Rahmen der Abschlussarbeit nicht ermittelt werden.
+
+\subsection{Vergleich mit MySQL und Open Virtuoso}
+\label{sub:mysql_ov_queries}
+
+Analog zu Abschnitt \ref{sub:etl-vergleich} sollen die Antwortzeiten der analytischen Abfragen im Folgenden mit denen der relationalen Datenbank MySQL und dem RDF Store Open Virtuoso verglichen werden. Tabelle \ref{tab:ana_vergleich_my_ov} listet die gemessenen Ausführungszeiten der 13 Abfragen bei den Datenmengen S1, S10 und S20 auf.
+
+\begin{table}[h]
+  \footnotesize
+  \centering
+  \rotatebox{-90}{
+    \begin{minipage}{\textheight}
+
+\begin{tabular}{l|r|r|r|r|r|r|r|r|r|r|r|r|r|r}
+\multicolumn{1}{l|}{\textbf{Name}} & \multicolumn{1}{l}{\textbf{Q1}} & \multicolumn{1}{|l}{\textbf{Q2}} & \multicolumn{1}{|l}{\textbf{Q3}} & \multicolumn{1}{|l}{\textbf{Q4}} & \multicolumn{1}{|l}{\textbf{Q5}} & \multicolumn{1}{|l}{\textbf{Q6}} & \multicolumn{1}{|l}{\textbf{Q7}} & \multicolumn{1}{|l}{\textbf{Q8}} & \multicolumn{1}{|l}{\textbf{Q9}} & \multicolumn{1}{|l}{\textbf{Q10}} & \multicolumn{1}{|l}{\textbf{Q11}} & \multicolumn{1}{|l}{\textbf{Q12}} & \multicolumn{1}{|l}{\textbf{Q13}} & \multicolumn{1}{|l}{\textbf{Sum}} \\ \hline \hline
+MySQL (S1)            & 1.2s & 0.9s & 0.9s & 12.8s & 12.5s & 12.2s & 8.4s & 6.4s & 6.2s & 2.4s & 9.2s & 4.3s & 4.1s & 81.5s \\ \hline
+Open Virtuoso (S1)    & 3.4s & 0.2s & 0.1s & 22.5s & 979.1s & 1.8s & 159.7s & 3.4s & 1.9s & 1.8s & 273.5s & N/A & 49.6s & 1497.0s \\ \hline
+ETL MDX (S1)          & 1.3s & 1.3s & 1.5s & 2.0s & 5.6s & 1.8s & 1.4s & 1.5s & 1.9s & 1.7s & 2.7s & 2.0s & 2.5s & 27,2s \\ \hline
+ETL SQL (S1)          & 0.2s & 0.2s & 0.2s & 1.3s & 0.1s & 0.9s & 0.1s & 1.1s & 0.9s & 0.9s & 0.1s & 0.1s & 1.2 & 7,3s \\ \hline\hline
+
+MySQL (S10)           & 12.0s & 8.6s & 8.6s & 158.0s & 156.5s & 155.1s & 158.4s & 134.8s & 131.8s & 131.6s & 164.2s & 161.1s & 135.6s & 1516.3s \\ \hline
+Open Virtuoso (S10)   & 574.1s & 1.9s & 0.5s & 159.2s & 18.3s & 4.1s & 7488.1s & 53.1s & 63.7s & 96.9s & 1334.4s & N/A & 18.4s & 9812.7s \\ \hline
+ETL MDX (S10)         & 1.4s & 1.4s & 1.6s & 4.2s & 11.0s & 2.1s & 3.3s & 3.3s & 2.6s & 1.8s & 5.3s & 4.1s & 5.1s & 47,2s \\ \hline
+ETL SQL (S10)         & 0.2s & 0.2s & 0.2s & 0.1s & 0.1s & 0.1s & 0.1s & 0.1s & 0.1s & 0.1s & 0.1s & 0.1s & 0.1s & 1,6s \\ \hline\hline
+
+MySQL (S20)           & 25.5s & 17.8s & 17.8s & 346.1s & 340.6s & 338.0s & 346.4s & 288.5s & 278.8s & 279.1s & 352.5s & 350.7s & 291.2s & 3273.0s\\ \hline
+Open Virtuoso (S20)   & 1156.0s & 3.8s & 1.0s & 128.2s & 25.0s & 9.0s & 353.9s & 32.5s & 520.9s & 373.8s & 10015.0s & N/A & 82.1s & 12701,2s \\ \hline
+ETL MDX (S20)         & 2.0s & 1.9s & 2.0s & 4.9s & 4.6s & 1.5s & 6.5s & 6.4s & 5.4s & 3.9s & 10.3s & N/A & N/A & 49,4s \\ \hline
+ETL SQL (S20)         & 0.2s & 0.3s & 0.2s & 0.3s & 0.2s & 0.2s & 0.2s & 0.5s & 0.2s & 0.1s & 0.1s & 0.2s & 0.6s & 3,3s \\ \hline\hline
+\end{tabular}
+
+      \caption{Vergleich der Antwortzeiten zwischen MySQL, Open Virtuoso und dem vorgestellten System mit 9 DataNodes.}
+      \label{tab:ana_vergleich_my_ov}
+    \end{minipage}
+  }
+\end{table}
+
+Wie erwartet, steigen die Antwortzeiten der SQL-Abfragen bei MySQL mit zunehmender Datenmenge an. Die SQL-Abfragen wurden erfolgreich bei allen Datenmengen ausgeführt. Bei S1 werden 81 Sekunden, bei S10 1516 Sekunden und bei S20 3273 Sekunden benötigt.
+
+Unter Verwendung von Open Virtuoso konnte die SPARQL-Abfrage Q12 bereits bei der Datenmenge S1 nicht erfolgreich ausgeführt werden. Aus diesem Grund wurde diese Abfrage bei den weiteren Datenmengen S10 und S20 nicht mehr berücksichtigt. Des Weiteren fallen die unterschiedlichen Antwortzeiten auf. Obwohl die Evaluation mehrere Male durchgeführt wurde, unterschieden sich die Ausführungszeiten bei unterschiedlicher Datenmenge zum Teil sehr stark voneinander, z.\,B. wird die SPARQL-Abfrage Q5 bei S1 in 979 Sekunden ausgeführt, während sie bei der Datenmenge S10 nur 18 Sekunden und bei S20 nur 25 Sekunden benötigte. Ein ähnliches Verhalten wurde bei der Abfrage Q7 festgestellt. Bei der Datenmenge S1 wird diese Abfrage in 160 Sekunden, bei S10 in 7488 Sekunden und bei S20 in 354 Sekunden ausgeführt. Eine Begründung hierfür ist nicht ersichtlich.
+
+Alles in allem können mit dem vorgestellten System sowohl bei MDX- als auch bei SQl-Abfragen deutlich kürzere Antwortzeiten erzielt werden als mit MySQL oder Open Virtuoso. Dieser Unterschied ist bei größeren Datenmengen am Signifikantesten.
+
+\section{Fazit der Evaluation}
+
+Die Evaluation hat gezeigt, dass die Ausführungszeit des ETL-Prozesses für kleine Datenmengen im Vergleich zum Bulk-Import in MySQL oder Open Virtuoso deutlich größer ist. Bei der größeren Datenmengen S10 und bereits mit 6 DataNodes hat der ETL-Prozess einen deutlichen Vorteil gegenüber dem RDF Store Open Virtuoso.
+
+Des Weiteren werden die analytischen MDX- und SQL-Abfragen bei allen Datenmengen deutlich schneller beantwortet als in der relationalen Datenbank MySQL und dem RDF Store Open Virtuoso. Dies wird durch die horizontale Speicherung der Daten in HBase erziel, welche eine effizientere Ausführung der analytischen Abfragen ermöglichen.
