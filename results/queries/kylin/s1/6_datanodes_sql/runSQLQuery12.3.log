@@ -1,0 +1,208 @@
+Printing 100 rows from table , null
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+|                LO_ORDERDATEYEARLEVEL                |                    LO_SUPPKEYNATIONLEVEL                    |                 LO_PARTKEYCATEGORYLEVEL                 |   PROFIT   |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  847462288 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  896327507 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> | 1007033549 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  974821543 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  896812810 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  900601640 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | 1002212704 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  823954843 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  894032797 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  884657239 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> | 1210023045 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> | 1031398831 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> | 1006837619 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> | 1079241348 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> | 1160496422 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> | 1090996883 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> |  984011386 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> | 1182988621 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> | 1139180914 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> | 1086369893 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  928786448 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  991987935 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  835300179 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  863413364 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  899293539 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  919544234 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | 1060627663 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  890831818 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  990861246 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  967694140 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  958145501 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  968335236 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  998117362 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  938034039 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> | 1053808641 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  972357024 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | 1015081991 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> | 1009080606 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> | 1058781292 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  913285862 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> | 1045476291 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  969582326 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  903652266 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> | 1036732625 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> | 1030530198 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  944769483 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | 1075049982 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> | 1017049083 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  956995382 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> | 1071035405 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  466323007 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  441021599 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  507495018 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  602463665 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  452855813 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  552853347 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> |  494271311 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  590061048 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  525079658 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  537121853 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  523841793 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  680533662 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  672461787 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  682040665 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  609351447 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  672873797 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> |  630553447 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  734287375 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  633108957 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  560661789 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  515429489 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  529883221 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  463833024 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  557259831 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  545322171 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  647934763 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> |  516915235 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  549768905 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  562106399 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  515053927 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  609544940 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  492423113 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  574141959 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  550857596 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  593373704 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  501352224 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> |  482348002 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  544204420 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  569726993 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  579856971 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-11> |  563730353 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-12> |  539678746 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-13> |  539827070 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-14> |  629088945 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-15> |  530143996 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-21> |  512693558 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> |  657306169 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-23> |  468502839 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-24> |  588013715 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-25> |  558510981 |
++-----------------------------------------------------+-------------------------------------------------------------+---------------------------------------------------------+------------+
+
+
+Execution Time: 107
+

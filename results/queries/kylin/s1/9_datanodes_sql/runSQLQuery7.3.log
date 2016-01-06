@@ -1,0 +1,308 @@
+Printing 150 rows from table , null
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+|                  LO_CUSTKEYNATIONLEVEL                  |                  LO_SUPPKEYNATIONLEVEL                  |                LO_ORDERDATEYEARLEVEL                | LO_REVENUE |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6993698318 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6496096128 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6476338867 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6446283645 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6357158496 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6263726671 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6196262698 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6042413554 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 6017679573 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5991275371 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5984057641 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5943100486 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5797445768 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5762973504 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5717924155 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5683439519 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5677180135 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5562289294 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5533781932 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5492002236 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5427502315 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5419707966 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5330045178 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5262842216 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 5184993226 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6578610448 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6561720990 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6561522678 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6442772140 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6366416630 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6362311531 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6261875813 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6228795359 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6135672939 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6124826492 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6081773051 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6029996234 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 6009169048 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5996696323 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5966163310 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5907688872 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5893719233 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5835968581 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5791119802 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5710014463 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5458883250 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5415341756 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5399682863 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5360555478 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 5288167390 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6722912149 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6684008124 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6582099935 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6500840587 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6469813095 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6400210978 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6353076236 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6241694705 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6225060895 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6223372394 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6223298646 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6133596433 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6129500774 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6081189996 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 6049481526 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5911474268 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5888016059 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5780451220 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5633646559 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5593457395 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5525428328 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5449332215 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5314593349 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 5294506383 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 4927095439 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6730030038 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6675283018 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6639156860 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6637431421 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6505309291 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6417728319 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6402770330 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6382522277 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6129389100 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6109042212 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 6058072540 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5992599086 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5940062133 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5885243940 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5874909487 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5868806984 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5834532941 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5822761485 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5725705598 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5719571256 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5602056233 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5406009282 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5404068459 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 5348368129 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 4969010181 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6850354841 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6773120986 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6736222625 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6618003557 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6593957633 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6473125403 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6325326115 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6218365051 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6213798004 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6204273577 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6105693707 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 6023242208 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5994025942 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5905728415 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5874751205 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5788911268 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5788143050 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5712678496 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5630134780 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5574761470 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5545736542 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5491501530 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5442270720 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5391136046 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 5327555523 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6690839665 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6536674330 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6419058414 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6411952594 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6319630787 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6290692410 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6270648094 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6199382122 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6161959429 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6104496228 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6049371551 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 6028468460 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5965938663 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5939043805 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5861625473 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5856700954 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5827788535 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5816703386 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5690873534 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationCHINA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5684084530 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5646336182 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationJAPAN>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5592995129 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5371389290 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDONESIA> | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5328679111 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyNationINDIA>     | <http://lod2.eu/schemas/rdfh#lo_suppkeyNationVIETNAM>   | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 5263197238 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+
+
+Execution Time: 107
+

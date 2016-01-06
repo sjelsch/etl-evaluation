@@ -1,0 +1,11 @@
+|                                                                                                                                                                                                                             | LO_REVENUE    |
++----------------------------------------------------+----------------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+---------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 6.488.080.293 |
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 6.214.003.563 |
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 6.210.810.542 |
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 6.330.757.531 |
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 6.502.331.840 |
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 6.625.015.226 |
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998> | <http://lod2.eu/schemas/rdfh#lo_partkeyMfgrMFGR-2> | <http://lod2.eu/schemas/rdfh#lo_partkeyCategoryMFGR-22> | <http://lod2.eu/schemas/rdfh#lo_partkeyBrand1MFGR-2239> | 3.784.951.278 |
+Execution Time: 2390
+

@@ -1,0 +1,78 @@
+Printing 35 rows from table , null
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+|                LO_ORDERDATEYEARLEVEL                |                    LO_CUSTKEYNATIONLEVEL                    |    PROFIT    |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 208179700969 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 204488053071 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 203336305458 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 204266160069 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 205324229969 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 208730514474 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 204610968748 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 204193040373 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 207492038436 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 207279892546 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 207864867812 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 203341322224 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 204655182002 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 205809009046 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 207979002681 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 206092224779 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 205814228886 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 202264817676 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 203738062740 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 204600944705 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 207045716651 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 204110852525 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 204440314391 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 206269369096 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 205300750652 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 208432142995 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 203697110611 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 202650865955 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 205270735783 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 203992161032 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | 121349610915 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | 119911203238 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | 120487370652 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | 119687214282 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+| <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998>  | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | 120095481770 |
++-----------------------------------------------------+-------------------------------------------------------------+--------------+
+
+
+Execution Time: 141
+

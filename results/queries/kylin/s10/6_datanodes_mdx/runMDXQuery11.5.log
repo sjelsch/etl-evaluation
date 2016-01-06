@@ -1,0 +1,39 @@
+|                                                                                                                                                                          | Profit          |
++-------------------------------------------------------+-------------------------------------------------------------+----------------------------------------------------+-----------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyRegionAMERICA> | <http://lod2.eu/schemas/rdfh#lo_custkeyNationARGENTINA>     | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992> | 103.719.745.491 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993> | 104.804.149.905 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994> | 102.680.809.322 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995> | 104.521.470.391 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996> | 105.409.529.511 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997> | 103.520.208.117 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998> |  60.245.313.373 |
+|                                                       | <http://lod2.eu/schemas/rdfh#lo_custkeyNationBRAZIL>        | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992> | 106.246.161.239 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993> | 106.198.050.501 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994> | 106.093.079.488 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995> | 107.568.611.750 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996> | 106.880.639.017 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997> | 106.690.124.662 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998> |  61.912.349.455 |
+|                                                       | <http://lod2.eu/schemas/rdfh#lo_custkeyNationCANADA>        | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992> | 106.647.931.375 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993> | 107.048.690.889 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994> | 104.514.167.652 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995> | 105.315.997.395 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996> | 105.586.646.448 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997> | 106.924.659.923 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998> |  62.738.136.949 |
+|                                                       | <http://lod2.eu/schemas/rdfh#lo_custkeyNationPERU>          | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992> | 104.134.609.838 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993> | 104.651.610.426 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994> | 104.257.308.810 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995> | 104.390.879.969 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996> | 105.890.415.529 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997> | 104.161.057.567 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998> |  62.706.700.969 |
+|                                                       | <http://lod2.eu/schemas/rdfh#lo_custkeyNationUNITED-STATES> | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992> | 105.245.006.839 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993> | 104.166.556.157 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994> | 107.595.107.297 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995> | 104.996.502.880 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996> | 104.859.848.521 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997> | 105.030.361.725 |
+|                                                       |                                                             | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1998> |  62.169.336.083 |
+Execution Time: 5871
+

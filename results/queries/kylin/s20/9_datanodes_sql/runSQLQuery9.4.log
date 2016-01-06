@@ -1,0 +1,56 @@
+Printing 24 rows from table , null
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+|                   LO_CUSTKEYCITYLEVEL                   |                   LO_SUPPKEYCITYLEVEL                   |                LO_ORDERDATEYEARLEVEL                | LO_REVENUE |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 1178335603 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 1052597356 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  | 1026260086 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1992>  |  973349994 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 1083378728 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  | 1043169947 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  |  965639669 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1993>  |  918452812 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 1260730803 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 1081071702 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  | 1020245194 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1994>  |  863514969 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 1124054660 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 1068365947 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 1040392678 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1995>  | 1039336005 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  | 1062077548 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  |  958571109 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  |  940597740 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1996>  |  874229030 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  | 1163355766 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  |  982350529 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  |  949314641 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+| <http://lod2.eu/schemas/rdfh#lo_custkeyCityUNITED-KI5>  | <http://lod2.eu/schemas/rdfh#lo_suppkeyCityUNITED-KI1>  | <http://lod2.eu/schemas/rdfh#lo_orderdateYear1997>  |  785895247 |
++---------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------+------------+
+
+
+Execution Time: 147
+
