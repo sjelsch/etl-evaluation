@@ -15,6 +15,20 @@ Dies ist die Projektseite der Abschlussarbeit "Optimierung von Analytischen Abfr
 | [results](https://github.com/sjelsch/etl-evaluation/tree/master/results) | Ergebnisse der Evaluation: 1.) Ausführungsdauer des ETL-Prozesses. 2.) Antwortzeiten der OLAP-Abfragen bei verschiedenen Datenmengen sowie Anzahl an DataNodes. |
 | [ttl](https://github.com/sjelsch/etl-evaluation/tree/master/ttl) | BIBM-Konfigurationsdatei für die Transformation der TBL-Daten in das Turtle-Format sowie die verwendete DataStructureDefinition in der Turtle-Notation. |
 
+### Cluster-Installation
+Bei der Evaluation wurde [Cloudera Director](http://www.cloudera.com/content/www/en-us/products/cloudera-director.html) in der Version 1.5.2 zur Installation eines Apache Hadoop Clusters eingesetzt. Die Anforderungen sowie die notwendige Schritte zur Installation von Cloudera Director sind auf dem [Dokumentationsportal](http://www.cloudera.com/content/www/en-us/documentation/director/latest/topics/director_get_started_aws.html) von Cloudera aufgelistet.
+
+Als Distribution wurde CDH (Cloudera Distribution Including Apache Hadoop) in der Version 5.3.8 mit der Auswahl *Core Hadoop with HBase* gewählt. Aus diesem Grund wurde das *Default Parcel Repository* durch die URL http://archive.cloudera.com/cdh5/parcels/5.3.8/ ersetzt.
+
+Zur Durchführung der Evaluation sind auf dem MasterNode einige Programme notwendig. In der folgenden Tabelle sind alle Befehle aufgelistet, um diese Tools zu installieren:
+
+| Befehl | Beschreibung |
+|---|---|
+| sudo yum install git | Installiert git, um dieses Repository zu pullen |
+| sudo yum install ant | Installiert [Apache Ant](https://ant.apache.org/index.html) - Ein Kompilierungsprogramm |
+| sudo yum groupinstall 'Development Tools' | Notwendig, um Star Schema Benchmark zu kompilieren |
+| sudo yum install openssl-devel | Notwendig, um Open Virtuoso zu kompilieren |
+
 ### Datengenerierung mit dem Star Schema Benchmark
 
 #### Generierung der TBL-Daten
