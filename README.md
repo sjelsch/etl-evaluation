@@ -65,6 +65,16 @@ Vor der Ausfürung der ETL-Prozesses muss die Datei [config.properties](https://
 
 Die Evaluation ist an die Arbeit "No Size Fits All – Running the Star Schema Benchmark with SPARQL and RDF Aggregate Views" [2] von Kämpgen und Harth angelehnt. Eine genaue Beschreibung der ebenfalls in dieser Evaluation verwendeten OLAP-Abfragen ist in der dazugehörigen [Projektseite](http://people.aifb.kit.edu/bka/ssb-benchmark/#ssb-queries-as-olap-queries) zu finden.
 
+### Evaluation: Aufwand und Kosten
+In diesem Abschnitt werden die benötigten Stunden und die dadurch entstandenen Kosten zur Durchführung der Evaluation bei Amazon Web Services (AWS) aufgelistet.
+
+| EC2-Instanz-Typ        | Kosten pro Stunde | Anzahl Stunden  | Kosten Gesamt | Infos |
+| ------------- |-------------------:|-----:|-----:|-----|
+| m4.large | $0.199  | 162 | $32.24 | Monitoring-Server |
+| m4.xlarge | $0.338 | 508 | $171.70 | Master- und DataNodes |
+
+Bei den dargestellten Preisen handelt es sich um Nettopreise. Zusätzlich wurde bei der Evaluation 505.81 GB-Monate für den Transfer der Daten zwischen den DataNodes benötigt. Dadurch erhöht sich der Gesamt-Nettopreis nochmals um $55.64. Insgesamt hatte die Evaluation einen Gesamtbetrag von $259.58.
+
 ### Literaturverzeichnis
 [1] O’Neil, P., O’Neil, E., Chen, X.: Star Schema Benchmark - Revision 3. Tech. rep., UMass/Boston (2009). ([pdf](http://www.cs.umb.edu/~poneil/StarSchemaB.pdf))
 
